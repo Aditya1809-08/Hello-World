@@ -1,32 +1,425 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello World</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {
-        font-family: cursive;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-image: url('e2a0d9eb12eba42447ce6de86e4fee0f.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aditya Srivastav — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --yellow: #F5C400;
+      --yellow-dark: #D4A800;
+      --yellow-light: #FFF3B0;
+      --black: #111111;
+      --white: #ffffff;
+      --gray: #f4f4f4;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HEXAGON BACKGROUND ── */
+    .hex-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 45%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.15;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='92' viewBox='0 0 80 92'%3E%3Cpolygon points='40,2 78,22 78,62 40,82 2,62 2,22' fill='none' stroke='%23F5C400' stroke-width='2'/%3E%3C/svg%3E");
+      background-size: 80px 92px;
+    }
+
+    /* ── HEADER BAR ── */
+    .header {
+      position: relative;
+      z-index: 10;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .header-bar {
+      background: var(--yellow);
+      border: 3px solid var(--black);
+      border-radius: 50px;
+      padding: 12px 60px;
+      letter-spacing: 0.35em;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      text-transform: uppercase;
+      color: var(--black);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    /* ── MAIN HERO ── */
+    .hero {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      min-height: calc(100vh - 80px);
+      align-items: center;
+      padding: 0 60px 0 0;
+    }
+
+    /* ── PHOTO SIDE ── */
+    .photo-side {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .photo-placeholder {
+      width: 340px;
+      height: 480px;
+      background: linear-gradient(135deg, #e8e8e8, #d0d0d0);
+      border-radius: 8px 8px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: #888;
+      font-size: 14px;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo-placeholder::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 6px;
+      background: var(--yellow);
+    }
+
+    .photo-placeholder svg {
+      width: 60px;
+      height: 60px;
+      opacity: 0.4;
+    }
+
+    /* ── CONTENT SIDE ── */
+    .content-side {
+      padding: 60px 0 60px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .name-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 5vw, 68px);
+      font-weight: 900;
+      color: var(--yellow);
+      text-decoration: underline;
+      text-decoration-color: var(--yellow);
+      text-underline-offset: 8px;
+      line-height: 1.1;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .bio-text {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 500;
+      color: var(--yellow-dark);
+      line-height: 1.6;
+      max-width: 540px;
+      animation: fadeUp 0.6s ease 0.15s both;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s ease 0.3s both;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 2.5px solid var(--black);
+    }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: var(--black);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--black);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--black);
+    }
+
+    .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--black);
+    }
+
+    /* ── BOTTOM STRIPE ── */
+    .bottom-stripe {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 32px;
+      display: flex;
+      z-index: 20;
+      overflow: hidden;
+    }
+
+    .stripe-cell {
+      flex: 1;
+      border-right: 2px solid var(--black);
+    }
+
+    .stripe-cell:nth-child(odd) { background: var(--yellow); }
+    .stripe-cell:nth-child(even) { background: var(--white); }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border: 3px solid var(--black);
+      border-radius: 16px;
+      padding: 40px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 8px 8px 0 var(--black);
+      animation: popIn 0.2s ease;
+    }
+
+    .modal h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: var(--black);
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--black);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2.5px solid var(--black);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--yellow);
+      box-shadow: 3px 3px 0 var(--yellow);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    .modal-btns {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-close {
+      background: var(--gray);
+      color: var(--black);
+      border: 2.5px solid var(--black);
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: transform 0.15s;
+    }
+
+    .btn-close:hover { transform: translate(-2px, -2px); }
+
+    .success-msg {
+      display: none;
+      background: var(--yellow-light);
+      border: 2px solid var(--yellow-dark);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 12px;
+      color: var(--black);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; padding: 20px; text-align: center; }
+      .photo-side { height: 320px; }
+      .photo-placeholder { width: 220px; height: 300px; }
+      .content-side { padding: 30px 0; align-items: center; }
+      .btn-row { justify-content: center; }
+      .hex-bg { width: 100%; opacity: 0.08; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hex-bg"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-bar">P O R T F O L I O</div>
+  </header>
+
+  <!-- HERO -->
+  <main class="hero">
+    <div class="photo-side">
+      <img src="YOUR_IMAGE_LINK_HERE" style="height:480px;object-fit:contain;object-position:bottom;" />
+    </div>
+
+    <div class="content-side">
+      <h1 class="name-heading">Aditya Srivastav</h1>
+      <p class="bio-text">
+        Hello, I'm a curious and driven developer exploring the world of tech and code. 
+        Below is everything my curiosity-filled brain has built — one commit at a time.
+      </p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="openModal()">Contact Me</button>
+        <button class="btn btn-secondary" onclick="alert('Resume coming soon! 🚀')">
+          My Resume ↓
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- BOTTOM STRIPE -->
+  <div class="bottom-stripe">
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+    <div class="stripe-cell"></div><div class="stripe-cell"></div>
+  </div>
+
+  <!-- CONTACT MODAL -->
+  <div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+    <div class="modal">
+      <h2>Say Hello 👋</h2>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" id="fname" placeholder="Your name" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="femail" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="fmessage" placeholder="What's on your mind?"></textarea>
+      </div>
+      <div class="modal-btns">
+        <button class="btn btn-primary" onclick="submitForm()">Send Message</button>
+        <button class="btn-close" onclick="closeModal()">Cancel</button>
+      </div>
+      <div class="success-msg" id="success-msg">
+        ✅ Message sent! I'll get back to you soon.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('modal').classList.add('active');
+    }
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+      document.getElementById('success-msg').style.display = 'none';
+    }
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('modal')) closeModal();
+    }
+    function submitForm() {
+      const name = document.getElementById('fname').value.trim();
+      const email = document.getElementById('femail').value.trim();
+      const msg = document.getElementById('fmessage').value.trim();
+      if (!name || !email || !msg) {
+        alert('Please fill in all fields!');
+        return;
       }
-      h1 {
-        font-size: 3rem;
-        color: #ffffff;
-        text-shadow: 0 0 20px rgba(255,100,0,0.8),
-                     0 2px 10px rgba(0,0,0,0.9);
-        letter-spacing: 4px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Hello, World! 👋</h1>
-  </body>
+      document.getElementById('success-msg').style.display = 'block';
+      document.getElementById('fname').value = '';
+      document.getElementById('femail').value = '';
+      document.getElementById('fmessage').value = '';
+    }
+  </script>
+
+</body>
 </html>
