@@ -21,27 +21,27 @@
       font-family: 'DM Sans', sans-serif;
       background: var(--white);
       color: var(--black);
-      min-height: 100vh;
-      overflow-x: hidden;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    /* ── HEXAGON BACKGROUND ── */
+    /* HEX BACKGROUND */
     .hex-bg {
       position: fixed;
       top: 0; left: 0;
-      width: 45%;
+      width: 100%;
       height: 100%;
       z-index: 0;
-      opacity: 0.15;
+      opacity: 0.12;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='92' viewBox='0 0 80 92'%3E%3Cpolygon points='40,2 78,22 78,62 40,82 2,62 2,22' fill='none' stroke='%23F5C400' stroke-width='2'/%3E%3C/svg%3E");
       background-size: 80px 92px;
     }
 
-    /* ── HEADER BAR ── */
+    /* HEADER */
     .header {
       position: relative;
       z-index: 10;
-      padding: 20px 40px;
+      padding: 24px 100px 0;
       display: flex;
       justify-content: center;
     }
@@ -54,70 +54,48 @@
       letter-spacing: 0.35em;
       font-size: 14px;
       font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
       text-transform: uppercase;
       color: var(--black);
       box-shadow: 4px 4px 0 var(--black);
     }
 
-    /* ── MAIN HERO ── */
+    /* HERO */
     .hero {
       position: relative;
       z-index: 5;
       display: grid;
-      grid-template-columns: 420px 1fr;
-      min-height: calc(100vh - 80px);
+      grid-template-columns: 380px 1fr;
+      height: calc(100vh - 100px);
       align-items: center;
-      padding: 0 60px 0 0;
     }
 
-    /* ── PHOTO SIDE ── */
+    /* PHOTO */
     .photo-side {
       position: relative;
       height: 100%;
       display: flex;
       align-items: flex-end;
       justify-content: center;
+      padding-left: 40px;
     }
 
-    .photo-placeholder {
-      width: 340px;
-      height: 480px;
-      background: linear-gradient(135deg, #e8e8e8, #d0d0d0);
-      border-radius: 8px 8px 0 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 12px;
-      color: #888;
-      font-size: 14px;
-      text-align: center;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
+    .photo-side img {
+      height: 85%;
+      max-height: 520px;
+      width: auto;
+      object-fit: contain;
+      object-position: bottom center;
+      display: block;
+      filter: drop-shadow(4px 0px 12px rgba(0,0,0,0.15));
     }
 
-    .photo-placeholder::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 6px;
-      background: var(--yellow);
-    }
-
-    .photo-placeholder svg {
-      width: 60px;
-      height: 60px;
-      opacity: 0.4;
-    }
-
-    /* ── CONTENT SIDE ── */
+    /* CONTENT */
     .content-side {
-      padding: 60px 0 60px 60px;
+      padding: 0 60px 60px 40px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
+      justify-content: center;
     }
 
     .name-heading {
@@ -133,15 +111,15 @@
     }
 
     .bio-text {
-      font-size: clamp(16px, 1.8vw, 20px);
+      font-size: clamp(15px, 1.6vw, 19px);
       font-weight: 500;
       color: var(--yellow-dark);
-      line-height: 1.6;
-      max-width: 540px;
+      line-height: 1.65;
+      max-width: 520px;
       animation: fadeUp 0.6s ease 0.15s both;
     }
 
-    /* ── BUTTONS ── */
+    /* BUTTONS */
     .btn-row {
       display: flex;
       gap: 16px;
@@ -187,14 +165,13 @@
       box-shadow: 2px 2px 0 var(--black);
     }
 
-    /* ── BOTTOM STRIPE ── */
+    /* BOTTOM STRIPE */
     .bottom-stripe {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 32px;
       display: flex;
       z-index: 20;
-      overflow: hidden;
     }
 
     .stripe-cell {
@@ -205,7 +182,7 @@
     .stripe-cell:nth-child(odd) { background: var(--yellow); }
     .stripe-cell:nth-child(even) { background: var(--white); }
 
-    /* ── MODAL OVERLAY ── */
+    /* MODAL */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -236,16 +213,13 @@
       margin-bottom: 24px;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
+    .form-group { margin-bottom: 16px; }
 
     .form-group label {
       display: block;
       font-size: 13px;
       font-weight: 600;
       margin-bottom: 6px;
-      color: var(--black);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -260,7 +234,6 @@
       font-size: 15px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
-      background: var(--white);
     }
 
     .form-group input:focus,
@@ -271,11 +244,7 @@
 
     .form-group textarea { resize: vertical; min-height: 100px; }
 
-    .modal-btns {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-    }
+    .modal-btns { display: flex; gap: 12px; margin-top: 24px; }
 
     .btn-close {
       background: var(--gray);
@@ -286,10 +255,7 @@
       font-weight: 600;
       cursor: pointer;
       font-family: 'DM Sans', sans-serif;
-      transition: transform 0.15s;
     }
-
-    .btn-close:hover { transform: translate(-2px, -2px); }
 
     .success-msg {
       display: none;
@@ -300,10 +266,8 @@
       font-size: 14px;
       font-weight: 500;
       margin-top: 12px;
-      color: var(--black);
     }
 
-    /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -313,49 +277,34 @@
       from { opacity: 0; transform: scale(0.92); }
       to   { opacity: 1; transform: scale(1); }
     }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .hero { grid-template-columns: 1fr; padding: 20px; text-align: center; }
-      .photo-side { height: 320px; }
-      .photo-placeholder { width: 220px; height: 300px; }
-      .content-side { padding: 30px 0; align-items: center; }
-      .btn-row { justify-content: center; }
-      .hex-bg { width: 100%; opacity: 0.08; }
-    }
   </style>
 </head>
 <body>
 
   <div class="hex-bg"></div>
 
-  <!-- HEADER -->
   <header class="header">
     <div class="header-bar">P O R T F O L I O</div>
   </header>
 
-  <!-- HERO -->
   <main class="hero">
     <div class="photo-side">
-      <img src="Gemini_Generated_Image_td0bwntd0bwntd0b-removebg-preview.png" style="height:480px;object-fit:contain;object-position:bottom;" />
+      <img src="https://raw.githubusercontent.com/Aditya1809-08/Hello-World/main/Gemini_Generated_Image_td0bwntd0bwntd0b-removebg-preview.png" alt="Aditya Srivastav" />
     </div>
 
     <div class="content-side">
       <h1 class="name-heading">Aditya Srivastav</h1>
       <p class="bio-text">
-        Hello, I'm a curious and driven developer exploring the world of tech and code. 
+        Hello, I'm a curious and driven developer exploring the world of tech and code.
         Below is everything my curiosity-filled brain has built — one commit at a time.
       </p>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="openModal()">Contact Me</button>
-        <button class="btn btn-secondary" onclick="alert('Resume coming soon! 🚀')">
-          My Resume ↓
-        </button>
+        <button class="btn btn-secondary" onclick="alert('Resume coming soon! 🚀')">My Resume ↓</button>
       </div>
     </div>
   </main>
 
-  <!-- BOTTOM STRIPE -->
   <div class="bottom-stripe">
     <div class="stripe-cell"></div><div class="stripe-cell"></div>
     <div class="stripe-cell"></div><div class="stripe-cell"></div>
@@ -369,7 +318,6 @@
     <div class="stripe-cell"></div><div class="stripe-cell"></div>
   </div>
 
-  <!-- CONTACT MODAL -->
   <div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
     <div class="modal">
       <h2>Say Hello 👋</h2>
@@ -389,16 +337,12 @@
         <button class="btn btn-primary" onclick="submitForm()">Send Message</button>
         <button class="btn-close" onclick="closeModal()">Cancel</button>
       </div>
-      <div class="success-msg" id="success-msg">
-        ✅ Message sent! I'll get back to you soon.
-      </div>
+      <div class="success-msg" id="success-msg">✅ Message sent! I'll get back to you soon.</div>
     </div>
   </div>
 
   <script>
-    function openModal() {
-      document.getElementById('modal').classList.add('active');
-    }
+    function openModal() { document.getElementById('modal').classList.add('active'); }
     function closeModal() {
       document.getElementById('modal').classList.remove('active');
       document.getElementById('success-msg').style.display = 'none';
@@ -410,10 +354,7 @@
       const name = document.getElementById('fname').value.trim();
       const email = document.getElementById('femail').value.trim();
       const msg = document.getElementById('fmessage').value.trim();
-      if (!name || !email || !msg) {
-        alert('Please fill in all fields!');
-        return;
-      }
+      if (!name || !email || !msg) { alert('Please fill in all fields!'); return; }
       document.getElementById('success-msg').style.display = 'block';
       document.getElementById('fname').value = '';
       document.getElementById('femail').value = '';
