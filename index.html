@@ -4,29 +4,240 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hello World</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
-        font-family: Monocraft.;
+        font-family: 'Cormorant Garamond', Georgia, serif;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background-image: url('140a1581b7d2b83e3fac32a185c83cc8.jpg');
+        background-image: url('bg11.png');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        overflow: hidden;
+        cursor: none;
       }
+
+      #cursor {
+        position: fixed;
+        width: 7px;
+        height: 7px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: screen;
+        box-shadow: 0 0 10px rgba(255,255,255,0.7);
+        z-index: 100;
+      }
+
+      #sphere-canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
       h1 {
+        position: relative;
+        z-index: 2;
         font-size: 3rem;
         color: #ffffff;
-        text-shadow: 0 0 20px rgba(255,100,0,0.8),
-                     0 2px 10px rgba(0,0,0,0.9);
-        letter-spacing: 4px;
+        text-shadow:
+          0 0 6px #fff,
+          0 0 14px #fff,
+          0 0 30px rgba(255,255,255,0.9),
+          0 0 60px rgba(255,255,255,0.5),
+          0 0 100px rgba(200,220,255,0.3);
+        letter-spacing: 6px;
+        pointer-events: none;
+        user-select: none;
       }
     </style>
   </head>
-<body>
+  <body>
+    <canvas id="sphere-canvas"></canvas>
+    <div id="cursor"></div>
     <h1>Hello, World! 👋</h1>
+
+    <script>
+      const canvas = document.getElementById('sphere-canvas');
+      const ctx = canvas.getContext('2d');
+      const cursorEl = document.getElementById('cursor');
+
+      let W, H, cx, cy;
+      let mouse = { x: -9999, y: -9999 };
+      let animId;
+
+      // Sphere bigger than text (~45% of min screen dimension)
+      let RADIUS;
+      const NUM_POINTS = 220;
+      const REPULSE_DIST = 90;
+      const REPULSE_STRENGTH = 65;
+
+      let points = [], origPoints = [], edges = [];
+      let rotY = 0;
+      const rotX = 0.3;
+
+      function resize() {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = W;
+        canvas.height = H;
+        cx = W / 2;
+        cy = H / 2;
+        RADIUS = Math.min(W, H) * 0.42;
+        buildSphere();
+      }
+
+      function buildSphere() {
+        points = []; origPoints = []; edges = [];
+        const golden = Math.PI * (3 - Math.sqrt(5));
+        for (let i = 0; i < NUM_POINTS; i++) {
+          const y = 1 - (i / (NUM_POINTS - 1)) * 2;
+          const r = Math.sqrt(1 - y * y);
+          const theta = golden * i;
+          const p = {
+            ox: RADIUS * r * Math.cos(theta),
+            oy: RADIUS * y,
+            oz: RADIUS * r * Math.sin(theta),
+            x:  RADIUS * r * Math.cos(theta),
+            y:  RADIUS * y,
+            z:  RADIUS * r * Math.sin(theta),
+            vx: 0, vy: 0, vz: 0
+          };
+          points.push(p);
+          origPoints.push({ x: p.ox, y: p.oy, z: p.oz });
+        }
+        // Tight edge threshold for dense mesh
+        for (let i = 0; i < points.length; i++) {
+          for (let j = i + 1; j < points.length; j++) {
+            const a = points[i], b = points[j];
+            const d = Math.sqrt((a.ox-b.ox)**2 + (a.oy-b.oy)**2 + (a.oz-b.oz)**2);
+            if (d < RADIUS * 0.38) edges.push([i, j]);
+          }
+        }
+      }
+
+      function rotateY(p, a) {
+        const cos = Math.cos(a), sin = Math.sin(a);
+        return { x: p.x * cos - p.z * sin, y: p.y, z: p.x * sin + p.z * cos };
+      }
+      function rotateX(p, a) {
+        const cos = Math.cos(a), sin = Math.sin(a);
+        return { x: p.x, y: p.y * cos - p.z * sin, z: p.y * sin + p.z * cos };
+      }
+      function project(p) {
+        const depth = 600;
+        const scale = depth / (depth + p.z + 200);
+        return { sx: cx + p.x * scale, sy: cy + p.y * scale, z: p.z };
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        rotY += 0.003;
+
+        // Very faint glow behind sphere
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, RADIUS * 0.9);
+        grad.addColorStop(0, 'rgba(0,0,0,0.12)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.beginPath();
+        ctx.arc(cx, cy, RADIUS * 0.9, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Physics
+        for (let i = 0; i < points.length; i++) {
+          const p = points[i];
+          const o = origPoints[i];
+          let rp = rotateY({ x: o.x, y: o.y, z: o.z }, rotY);
+          rp = rotateX(rp, rotX);
+          const proj = project(rp);
+
+          const dx = proj.sx - mouse.x;
+          const dy = proj.sy - mouse.y;
+          const dist2d = Math.sqrt(dx * dx + dy * dy);
+          let pushX = 0, pushY = 0, pushZ = 0;
+          if (dist2d < REPULSE_DIST && mouse.x > 0) {
+            const force = (1 - dist2d / REPULSE_DIST) * REPULSE_STRENGTH;
+            const angle = Math.atan2(dy, dx);
+            pushX = Math.cos(angle) * force;
+            pushY = Math.sin(angle) * force;
+            pushZ = -force * 0.4;
+          }
+
+          const spring = 0.12, damp = 0.75;
+          p.vx = (p.vx + (rp.x + pushX - p.x) * spring) * damp;
+          p.vy = (p.vy + (rp.y + pushY - p.y) * spring) * damp;
+          p.vz = (p.vz + (rp.z + pushZ - p.z) * spring) * damp;
+          p.x += p.vx; p.y += p.vy; p.z += p.vz;
+        }
+
+        // Edges
+        for (const [a, b] of edges) {
+          const pa = points[a], pb = points[b];
+          const projA = project(pa), projB = project(pb);
+          const avgZ = (pa.z + pb.z) / 2;
+          const norm = (avgZ + RADIUS + 200) / (RADIUS * 2 + 200);
+          const alpha = Math.max(0.03, Math.min(0.32, norm * 0.38));
+          ctx.beginPath();
+          ctx.moveTo(projA.sx, projA.sy);
+          ctx.lineTo(projB.sx, projB.sy);
+          ctx.strokeStyle = `rgba(210,225,255,${alpha})`;
+          ctx.lineWidth = 0.4;
+          ctx.stroke();
+        }
+
+        // Nodes — tiny and dense
+        const sorted = [...points].sort((a, b) => a.z - b.z);
+        for (const p of sorted) {
+          const proj = project(p);
+          const norm = (p.z + RADIUS + 200) / (RADIUS * 2 + 200);
+          const size = 0.4 + norm * 1.1;   // much smaller particles
+          const alpha = 0.35 + norm * 0.65;
+
+          // Subtle glow only on front-facing bright nodes
+          if (norm > 0.72) {
+            const glow = ctx.createRadialGradient(proj.sx, proj.sy, 0, proj.sx, proj.sy, size * 3.5);
+            glow.addColorStop(0, `rgba(220,235,255,${alpha * 0.22})`);
+            glow.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.beginPath();
+            ctx.arc(proj.sx, proj.sy, size * 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = glow;
+            ctx.fill();
+          }
+
+          ctx.beginPath();
+          ctx.arc(proj.sx, proj.sy, size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(230,240,255,${alpha})`;
+          ctx.fill();
+        }
+
+        animId = requestAnimationFrame(draw);
+      }
+
+      document.addEventListener('mousemove', e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        cursorEl.style.left = mouse.x + 'px';
+        cursorEl.style.top = mouse.y + 'px';
+      });
+      document.addEventListener('mouseleave', () => {
+        mouse.x = -9999; mouse.y = -9999;
+        cursorEl.style.left = '-20px';
+      });
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(animId);
+        resize();
+        draw();
+      });
+
+      resize();
+      draw();
+    </script>
   </body>
 </html>
