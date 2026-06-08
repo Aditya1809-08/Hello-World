@@ -1,243 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello World</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {
-        font-family: 'Cormorant Garamond', Georgia, serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-image: url('3861a23e5df3b945e2fc69cd593284d8.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        overflow: hidden;
-        cursor: none;
-      }
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hello World Card</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ============================================================
+       BACKGROUND IMAGE — change the value below to your own image
+         • Local file : url('your-photo.jpg')
+         • Web URL    : url('https://example.com/photo.jpg')
+    ============================================================ */
+    :root {
+      --bg-image: url('5a8300f5c0dcd51f0c9e05f5d109e842.jpg');
+    }
 
-      #cursor {
-        position: fixed;
-        width: 7px;
-        height: 7px;
-        background: rgba(255,255,255,0.95);
-        border-radius: 50%;
-        pointer-events: none;
-        transform: translate(-50%, -50%);
-        mix-blend-mode: screen;
-        box-shadow: 0 0 10px rgba(255,255,255,0.7);
-        z-index: 100;
-      }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      #sphere-canvas {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        pointer-events: none;
-        z-index: 1;
-      }
+    body {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Sora', sans-serif;
+      background: #070b1a;
+      overflow: hidden;
+    }
 
-      h1 {
-        position: relative;
-        z-index: 2;
-        font-size: 3rem;
-        color: #ffffff;
-        text-shadow:
-          0 0 6px #fff,
-          0 0 14px #fff,
-          0 0 30px rgba(255,255,255,0.9),
-          0 0 60px rgba(255,255,255,0.5),
-          0 0 100px rgba(200,220,255,0.3);
-        letter-spacing: 6px;
-        pointer-events: none;
-        user-select: none;
-      }
-    </style>
-  </head>
-  <body>
-    <canvas id="sphere-canvas"></canvas>
-    <div id="cursor"></div>
-    <h1>Hello, World! 👋</h1>
+    .bg {
+      position: fixed; inset: 0;
+      background-image: var(--bg-image);
+      background-size: cover; background-position: center;
+      filter: brightness(0.22) saturate(0.6);
+      z-index: 0;
+    }
 
-    <script>
-      const canvas = document.getElementById('sphere-canvas');
-      const ctx = canvas.getContext('2d');
-      const cursorEl = document.getElementById('cursor');
+    /* Ambient blobs */
+    .blob { position: fixed; border-radius: 50%; filter: blur(90px); opacity: 0.5; z-index: 1; pointer-events: none; }
+    .blob-1 { width: 500px; height: 500px; background: radial-gradient(circle, #2a4bdb, #1430a0); top: -5%; left: 50%; transform: translateX(-50%); animation: drift1 9s ease-in-out infinite alternate; }
+    .blob-2 { width: 320px; height: 320px; background: radial-gradient(circle, #5e2ced, #2a0090); bottom: 5%; right: 20%; animation: drift2 12s ease-in-out infinite alternate-reverse; }
+    .blob-3 { width: 200px; height: 200px; background: radial-gradient(circle, #0ea5e9, #0369a1); bottom: 10%; left: 15%; animation: drift2 7s ease-in-out infinite alternate; }
+    @keyframes drift1 { from{transform:translateX(-50%) translateY(0)} to{transform:translateX(-50%) translateY(40px)} }
+    @keyframes drift2 { from{transform:translateY(0)} to{transform:translateY(30px)} }
 
-      let W, H, cx, cy;
-      let mouse = { x: -9999, y: -9999 };
-      let animId;
+    /* ── Card wrapper for running light ── */
+    .card-wrap {
+      position: relative; z-index: 2;
+      border-radius: 36px;
+      padding: 2px;
+      /* base border so card doesn't jump when canvas starts */
+      background: rgba(255,255,255,0.06);
+      animation: cardIn 0.9s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(40px) scale(0.94); }
+      to   { opacity:1; transform: none; }
+    }
 
-      // Sphere bigger than text (~45% of min screen dimension)
-      let RADIUS;
-      const NUM_POINTS = 220;
-      const REPULSE_DIST = 90;
-      const REPULSE_STRENGTH = 65;
+    /* The canvas sits on top of card-wrap, covers the border area */
+    #borderCanvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border-radius: 36px;
+      pointer-events: none;
+      z-index: 10;
+    }
 
-      let points = [], origPoints = [], edges = [];
-      let rotY = 0;
-      const rotX = 0.3;
+    /* ── Card ── */
+    .card {
+      position: relative;
+      width: 440px;
+      background: rgba(10, 14, 34, 0.72);
+      border-radius: 34px;
+      padding: 56px 44px 44px;
+      backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.07) inset,
+        0 50px 100px rgba(0,0,0,0.6),
+        0 0 140px rgba(42,75,219,0.15);
+      text-align: center;
+    }
 
-      function resize() {
-        W = window.innerWidth;
-        H = window.innerHeight;
-        canvas.width = W;
-        canvas.height = H;
-        cx = W / 2;
-        cy = H / 2;
-        RADIUS = Math.min(W, H) * 0.42;
-        buildSphere();
-      }
+    /* inner corner gradient shimmer */
+    .card::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 34px;
+      background: linear-gradient(135deg,
+        rgba(91,130,255,0.14) 0%,
+        transparent 45%,
+        transparent 55%,
+        rgba(91,60,255,0.12) 100%);
+      pointer-events: none;
+    }
 
-      function buildSphere() {
-        points = []; origPoints = []; edges = [];
-        const golden = Math.PI * (3 - Math.sqrt(5));
-        for (let i = 0; i < NUM_POINTS; i++) {
-          const y = 1 - (i / (NUM_POINTS - 1)) * 2;
-          const r = Math.sqrt(1 - y * y);
-          const theta = golden * i;
-          const p = {
-            ox: RADIUS * r * Math.cos(theta),
-            oy: RADIUS * y,
-            oz: RADIUS * r * Math.sin(theta),
-            x:  RADIUS * r * Math.cos(theta),
-            y:  RADIUS * y,
-            z:  RADIUS * r * Math.sin(theta),
-            vx: 0, vy: 0, vz: 0
-          };
-          points.push(p);
-          origPoints.push({ x: p.ox, y: p.oy, z: p.oz });
-        }
-        // Tight edge threshold for dense mesh
-        for (let i = 0; i < points.length; i++) {
-          for (let j = i + 1; j < points.length; j++) {
-            const a = points[i], b = points[j];
-            const d = Math.sqrt((a.ox-b.ox)**2 + (a.oy-b.oy)**2 + (a.oz-b.oz)**2);
-            if (d < RADIUS * 0.38) edges.push([i, j]);
+    /* ── Icon orb ── */
+    .orb {
+      width: 140px; height: 140px;
+      margin: 0 auto 36px;
+      border-radius: 50%;
+      background: conic-gradient(from 180deg,
+        #1d3bcc 0%, #3b6aff 25%, #7b5ea7 50%, #c27b3a 75%, #1d3bcc 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      box-shadow: 0 0 50px rgba(59,106,255,0.55), 0 0 100px rgba(59,106,255,0.22);
+      animation: orbPulse 4s ease-in-out infinite;
+    }
+    @keyframes orbPulse {
+      0%,100% { box-shadow: 0 0 50px rgba(59,106,255,0.55), 0 0 100px rgba(59,106,255,0.22); }
+      50%      { box-shadow: 0 0 70px rgba(59,106,255,0.8),  0 0 140px rgba(59,106,255,0.38); }
+    }
+    .orb::after {
+      content: '';
+      position: absolute; inset: 0; border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.22), transparent 58%);
+    }
+    .orb svg { width: 66px; height: 66px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.9)); position: relative; z-index: 1; }
+
+    /* ── Badge ── */
+    .fact-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(91,130,255,0.1);
+      border: 1px solid rgba(91,130,255,0.28);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 0.65rem; font-weight: 600;
+      color: #7fa8ff; letter-spacing: 0.14em;
+      text-transform: uppercase; margin-bottom: 14px;
+    }
+    .fact-dot { width: 6px; height: 6px; border-radius: 50%; background: #7fa8ff; box-shadow: 0 0 6px #7fa8ff; animation: blink 1.8s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    /* ── Text ── */
+    h1 {
+      font-size: 2.1rem; font-weight: 700;
+      color: #fff; line-height: 1.15;
+      margin-bottom: 16px; letter-spacing: -0.02em;
+    }
+    .desc {
+      font-size: 0.9rem; font-weight: 300;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.8; letter-spacing: 0.01em;
+      margin-bottom: 38px;
+      min-height: 96px;
+    }
+
+    /* ── Button ── */
+    .btn {
+      display: block; width: 100%;
+      padding: 17px 24px;
+      background: #fff; color: #0d1228;
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem; font-weight: 600;
+      border: none; border-radius: 18px;
+      cursor: pointer; letter-spacing: 0.02em;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+    }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(0,0,0,0.45); background: #eef2ff; }
+    .btn:active { transform: scale(0.98); }
+  </style>
+</head>
+<body>
+
+  <div class="bg"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="card-wrap" id="cardWrap">
+    <canvas id="borderCanvas"></canvas>
+    <div class="card">
+
+      <div class="orb">
+        <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L13.09 8.26L19 6L15.45 11.13L21 13.27L14.82 14.18L16 20L12 15.77L8 20L9.18 14.18L3 13.27L8.55 11.13L5 6L10.91 8.26L12 2Z"/>
+        </svg>
+      </div>
+
+      <div class="fact-badge">
+        <span class="fact-dot"></span>
+        <span id="factLabel">Daily Thought</span>
+      </div>
+
+      <h1>Hello, World! 👋</h1>
+      <p class="desc" id="descText">Loading…</p>
+      <button class="btn" onclick="nextFact()">Next Thought &nbsp;→</button>
+
+    </div>
+  </div>
+
+  <script>
+    // ── Rotating facts ──
+    const facts = [
+      "You are made of stardust — every atom in your body was forged inside a dying star billions of years ago. That's not poetry, that's physics.",
+      "The human brain can store approximately 2.5 petabytes of information. You're literally walking around with a supercomputer between your ears.",
+      "Coding is the closest thing to actual magic — you write symbols on a screen and machines obey. That's sorcery with a keyboard.",
+      "Every great developer was once a beginner who refused to quit. The only difference between a novice and an expert is time and stubbornness.",
+      "Sleep is a superpower. Your brain replays everything you learned during the day while you sleep, solidifying memories and solving problems.",
+      "The most powerful tool you'll ever use isn't an IDE or a framework — it's curiosity. Stay curious and you'll never stop growing.",
+      "You've already solved thousands of problems in your life without noticing. Programming just makes the problem-solving visible.",
+    ];
+    const labels = ["Space Fact","Brain Fact","Dev Wisdom","Motivation","Science Fact","Life Wisdom","Dev Mindset"];
+    let current = 0;
+
+    function showFact(idx) {
+      const desc = document.getElementById('descText');
+      const label = document.getElementById('factLabel');
+      desc.style.opacity = 0; desc.style.transform = 'translateY(10px)';
+      setTimeout(() => {
+        desc.textContent = facts[idx];
+        label.textContent = labels[idx];
+        desc.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+        desc.style.opacity = 1; desc.style.transform = 'translateY(0)';
+      }, 230);
+    }
+    function nextFact() { current = (current + 1) % facts.length; showFact(current); }
+
+    document.getElementById('descText').style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+    showFact(0);
+    setInterval(nextFact, 6000);
+
+    // ── Running light border (canvas) ──
+    const wrap   = document.getElementById('cardWrap');
+    const canvas = document.getElementById('borderCanvas');
+    const ctx    = canvas.getContext('2d');
+    const R      = 36; // border-radius matching CSS
+    let W, H;
+
+    function resize() {
+      W = canvas.width  = wrap.offsetWidth;
+      H = canvas.height = wrap.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Build a rounded-rect path and return total perimeter length
+    function buildPath() {
+      const r = R;
+      ctx.beginPath();
+      ctx.moveTo(r, 0);
+      ctx.lineTo(W - r, 0);
+      ctx.arcTo(W, 0, W, r, r);
+      ctx.lineTo(W, H - r);
+      ctx.arcTo(W, H, W - r, H, r);
+      ctx.lineTo(r, H);
+      ctx.arcTo(0, H, 0, H - r, r);
+      ctx.lineTo(0, r);
+      ctx.arcTo(0, 0, r, 0, r);
+      ctx.closePath();
+    }
+
+    // Approximate perimeter of the rounded rect
+    function perimeter() {
+      return 2*(W + H) - (8 - 2*Math.PI)*R;
+    }
+
+    // Convert a 0-1 progress around the perimeter to an x,y point
+    function pointAt(t) {
+      const straights = [
+        { from:[R,0],       to:[W-R, 0],   len: W-2*R },   // top
+        { from:[W, R],      to:[W, H-R],   len: H-2*R },   // right
+        { from:[W-R, H],    to:[R, H],     len: W-2*R },   // bottom
+        { from:[0, H-R],    to:[0, R],     len: H-2*R },   // left
+      ];
+      const corners = [
+        { cx:W-R, cy:R,   startA:-Math.PI/2, endA:0         },  // top-right
+        { cx:W-R, cy:H-R, startA:0,          endA:Math.PI/2 },  // bottom-right
+        { cx:R,   cy:H-R, startA:Math.PI/2,  endA:Math.PI   },  // bottom-left
+        { cx:R,   cy:R,   startA:Math.PI,    endA:3*Math.PI/2}, // top-left
+      ];
+
+      const perim = perimeter();
+      const arcLen = Math.PI/2 * R;
+      const segments = [
+        straights[0], corners[0],
+        straights[1], corners[1],
+        straights[2], corners[2],
+        straights[3], corners[3],
+      ];
+
+      let dist = t * perim;
+      for (let i = 0; i < segments.length; i++) {
+        const seg = segments[i];
+        const len = seg.len !== undefined ? seg.len : arcLen;
+        if (dist <= len) {
+          const p = dist / len;
+          if (seg.len !== undefined) {
+            return [
+              seg.from[0] + (seg.to[0]-seg.from[0])*p,
+              seg.from[1] + (seg.to[1]-seg.from[1])*p
+            ];
+          } else {
+            const a = seg.startA + (seg.endA - seg.startA)*p;
+            return [seg.cx + R*Math.cos(a), seg.cy + R*Math.sin(a)];
           }
         }
+        dist -= len;
       }
+      return [R, 0];
+    }
 
-      function rotateY(p, a) {
-        const cos = Math.cos(a), sin = Math.sin(a);
-        return { x: p.x * cos - p.z * sin, y: p.y, z: p.x * sin + p.z * cos };
-      }
-      function rotateX(p, a) {
-        const cos = Math.cos(a), sin = Math.sin(a);
-        return { x: p.x, y: p.y * cos - p.z * sin, z: p.y * sin + p.z * cos };
-      }
-      function project(p) {
-        const depth = 600;
-        const scale = depth / (depth + p.z + 200);
-        return { sx: cx + p.x * scale, sy: cy + p.y * scale, z: p.z };
-      }
+    let prog = 0;
+    // Two lights offset by half
+    const lights = [
+      { offset: 0,   color1: '#ffffff', color2: '#5b82ff', color3: '#a855f7' },
+      { offset: 0.5, color1: '#ffffff', color2: '#f472b6', color3: '#7b2fff' },
+    ];
 
-      function draw() {
-        ctx.clearRect(0, 0, W, H);
-        rotY += 0.003;
+    function drawFrame() {
+      ctx.clearRect(0, 0, W, H);
 
-        // Very faint glow behind sphere
-        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, RADIUS * 0.9);
-        grad.addColorStop(0, 'rgba(0,0,0,0.12)');
-        grad.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.beginPath();
-        ctx.arc(cx, cy, RADIUS * 0.9, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.fill();
+      // Faint static border
+      buildPath();
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
 
-        // Physics
-        for (let i = 0; i < points.length; i++) {
-          const p = points[i];
-          const o = origPoints[i];
-          let rp = rotateY({ x: o.x, y: o.y, z: o.z }, rotY);
-          rp = rotateX(rp, rotX);
-          const proj = project(rp);
+      // Draw each running light
+      lights.forEach(light => {
+        const t = (prog + light.offset) % 1;
+        const [x, y] = pointAt(t);
 
-          const dx = proj.sx - mouse.x;
-          const dy = proj.sy - mouse.y;
-          const dist2d = Math.sqrt(dx * dx + dy * dy);
-          let pushX = 0, pushY = 0, pushZ = 0;
-          if (dist2d < REPULSE_DIST && mouse.x > 0) {
-            const force = (1 - dist2d / REPULSE_DIST) * REPULSE_STRENGTH;
-            const angle = Math.atan2(dy, dx);
-            pushX = Math.cos(angle) * force;
-            pushY = Math.sin(angle) * force;
-            pushZ = -force * 0.4;
-          }
+        // Outer large glow
+        const glow = ctx.createRadialGradient(x, y, 0, x, y, 55);
+        glow.addColorStop(0,   light.color3.replace(')', ',0.35)').replace('rgb','rgba').replace('#', 'rgba(').replace('rgba(','rgba(').replace(/rgba\(([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i, (_, r, g, b) => `rgba(${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)}`));
+        glow.addColorStop(1,   'rgba(0,0,0,0)');
 
-          const spring = 0.12, damp = 0.75;
-          p.vx = (p.vx + (rp.x + pushX - p.x) * spring) * damp;
-          p.vy = (p.vy + (rp.y + pushY - p.y) * spring) * damp;
-          p.vz = (p.vz + (rp.z + pushZ - p.z) * spring) * damp;
-          p.x += p.vx; p.y += p.vy; p.z += p.vz;
+        // Simpler approach for glow
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        const g2 = ctx.createRadialGradient(x, y, 0, x, y, 60);
+        g2.addColorStop(0, 'rgba(160,120,255,0.5)');
+        g2.addColorStop(0.4, 'rgba(91,130,255,0.2)');
+        g2.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g2;
+        ctx.beginPath(); ctx.arc(x, y, 60, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        // Bright core dot
+        ctx.save();
+        const core = ctx.createRadialGradient(x, y, 0, x, y, 10);
+        core.addColorStop(0, 'rgba(255,255,255,1)');
+        core.addColorStop(0.3, 'rgba(180,200,255,0.85)');
+        core.addColorStop(1, 'rgba(91,130,255,0)');
+        ctx.fillStyle = core;
+        ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        // Trail: draw segments behind the dot
+        const trailLen = 0.12;
+        const steps = 40;
+        for (let i = 0; i < steps; i++) {
+          const tp = ((t - (i/steps)*trailLen) + 1) % 1;
+          const [tx, ty] = pointAt(tp);
+          const alpha = (1 - i/steps) * 0.55;
+          const size  = (1 - i/steps) * 3.5;
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = i < steps*0.3 ? light.color2 : light.color3;
+          ctx.beginPath(); ctx.arc(tx, ty, size, 0, Math.PI*2); ctx.fill();
+          ctx.restore();
         }
-
-        // Edges
-        for (const [a, b] of edges) {
-          const pa = points[a], pb = points[b];
-          const projA = project(pa), projB = project(pb);
-          const avgZ = (pa.z + pb.z) / 2;
-          const norm = (avgZ + RADIUS + 200) / (RADIUS * 2 + 200);
-          const alpha = Math.max(0.03, Math.min(0.32, norm * 0.38));
-          ctx.beginPath();
-          ctx.moveTo(projA.sx, projA.sy);
-          ctx.lineTo(projB.sx, projB.sy);
-          ctx.strokeStyle = `rgba(210,225,255,${alpha})`;
-          ctx.lineWidth = 0.4;
-          ctx.stroke();
-        }
-
-        // Nodes — tiny and dense
-        const sorted = [...points].sort((a, b) => a.z - b.z);
-        for (const p of sorted) {
-          const proj = project(p);
-          const norm = (p.z + RADIUS + 200) / (RADIUS * 2 + 200);
-          const size = 0.4 + norm * 1.1;   // much smaller particles
-          const alpha = 0.35 + norm * 0.65;
-
-          // Subtle glow only on front-facing bright nodes
-          if (norm > 0.72) {
-            const glow = ctx.createRadialGradient(proj.sx, proj.sy, 0, proj.sx, proj.sy, size * 3.5);
-            glow.addColorStop(0, `rgba(220,235,255,${alpha * 0.22})`);
-            glow.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.beginPath();
-            ctx.arc(proj.sx, proj.sy, size * 3.5, 0, Math.PI * 2);
-            ctx.fillStyle = glow;
-            ctx.fill();
-          }
-
-          ctx.beginPath();
-          ctx.arc(proj.sx, proj.sy, size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(230,240,255,${alpha})`;
-          ctx.fill();
-        }
-
-        animId = requestAnimationFrame(draw);
-      }
-
-      document.addEventListener('mousemove', e => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-        cursorEl.style.left = mouse.x + 'px';
-        cursorEl.style.top = mouse.y + 'px';
-      });
-      document.addEventListener('mouseleave', () => {
-        mouse.x = -9999; mouse.y = -9999;
-        cursorEl.style.left = '-20px';
-      });
-      window.addEventListener('resize', () => {
-        cancelAnimationFrame(animId);
-        resize();
-        draw();
       });
 
-      resize();
-      draw();
-    </script>
-  </body>
+      prog = (prog + 0.003) % 1;
+      requestAnimationFrame(drawFrame);
+    }
+
+    drawFrame();
+  </script>
+
+</body>
 </html>
