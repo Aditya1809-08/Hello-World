@@ -4,15 +4,11 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Hello World Card</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    /* ============================================================
-       BACKGROUND IMAGE — change the value below to your own image
-         • Local file : url('your-photo.jpg')
-         • Web URL    : url('https://example.com/photo.jpg')
-    ============================================================ */
+    /* CSS FALLBACK IMAGE — only used if CARD_IMAGE_URL below is left empty */
     :root {
-      --bg-image: url('BG1b1.png');
+      --top-image: url('BG1b1.png');
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,147 +16,133 @@
     body {
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Sora', sans-serif;
-      background: #070b1a;
+      font-family: 'Inter', sans-serif;
+      background: #E8E5DD;
+      padding: 40px 20px;
       overflow: hidden;
     }
 
-    .bg {
-      position: fixed; inset: 0;
-      background-image: var(--bg-image);
-      background-size: cover; background-position: center;
-      filter: brightness(0.22) saturate(0.6);
-      z-index: 0;
-    }
-
-    /* Ambient blobs */
-    .blob { position: fixed; border-radius: 50%; filter: blur(90px); opacity: 0.5; z-index: 1; pointer-events: none; }
-    .blob-1 { width: 500px; height: 500px; background: radial-gradient(circle, #2a4bdb, #1430a0); top: -5%; left: 50%; transform: translateX(-50%); animation: drift1 9s ease-in-out infinite alternate; }
-    .blob-2 { width: 320px; height: 320px; background: radial-gradient(circle, #5e2ced, #2a0090); bottom: 5%; right: 20%; animation: drift2 12s ease-in-out infinite alternate-reverse; }
-    .blob-3 { width: 200px; height: 200px; background: radial-gradient(circle, #0ea5e9, #0369a1); bottom: 10%; left: 15%; animation: drift2 7s ease-in-out infinite alternate; }
+    /* Ambient blurred blobs behind the card */
+    .blob { position: fixed; border-radius: 50%; filter: blur(90px); z-index: 0; pointer-events: none; }
+    .blob-1 { width: 460px; height: 460px; background: radial-gradient(circle, rgba(59,106,255,0.35), rgba(29,59,204,0.15)); top: -8%; left: 50%; transform: translateX(-50%); animation: drift1 9s ease-in-out infinite alternate; }
+    .blob-2 { width: 320px; height: 320px; background: radial-gradient(circle, rgba(123,94,167,0.32), rgba(91,45,204,0.14)); bottom: 6%; right: 14%; animation: drift2 12s ease-in-out infinite alternate-reverse; }
+    .blob-3 { width: 220px; height: 220px; background: radial-gradient(circle, rgba(14,165,233,0.3), rgba(3,105,161,0.12)); bottom: 10%; left: 12%; animation: drift2 7s ease-in-out infinite alternate; }
     @keyframes drift1 { from{transform:translateX(-50%) translateY(0)} to{transform:translateX(-50%) translateY(40px)} }
     @keyframes drift2 { from{transform:translateY(0)} to{transform:translateY(30px)} }
 
-    /* ── Card wrapper for running light ── */
+    /* Wrapper holds the card plus the running-light border canvas */
     .card-wrap {
-      position: relative; z-index: 2;
-      border-radius: 36px;
-      padding: 2px;
-      /* base border so card doesn't jump when canvas starts */
-      background: rgba(255,255,255,0.06);
-      animation: cardIn 0.9s cubic-bezier(0.22,1,0.36,1) both;
+      position: relative;
+      z-index: 2;
+      border-radius: 26px;
+      animation: cardIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    #borderCanvas {
+      position: absolute; inset: -1px;
+      width: calc(100% + 2px); height: calc(100% + 2px);
+      border-radius: 26px;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .card {
+      width: 420px;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #0c0e13;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.22),
+        0 8px 24px rgba(0,0,0,0.10);
     }
     @keyframes cardIn {
-      from { opacity:0; transform: translateY(40px) scale(0.94); }
-      to   { opacity:1; transform: none; }
+      from { opacity: 0; transform: translateY(28px) scale(0.97); }
+      to   { opacity: 1; transform: none; }
     }
 
-    /* The canvas sits on top of card-wrap, covers the border area */
-    #borderCanvas {
+    /* ── Top image panel ── */
+    .card-image {
+      position: relative;
+      height: 400px;
+      background-image: var(--top-image);
+      background-size: cover;
+      background-position: center;
+    }
+    .card-image::after {
+      content: '';
       position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      border-radius: 36px;
-      pointer-events: none;
-      z-index: 10;
+      background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 60%, #0c0e13 100%);
+    }
+    .caption {
+      position: absolute; top: 22px; left: 24px;
+      color: #fff; font-size: 0.85rem; font-weight: 500;
+      letter-spacing: 0.01em;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.35);
+      z-index: 1;
     }
 
-    /* ── Card ── */
-    .card {
-      position: relative;
-      width: 440px;
-      background: rgba(10, 14, 34, 0.72);
-      border-radius: 34px;
-      padding: 56px 44px 44px;
-      backdrop-filter: blur(32px);
-      -webkit-backdrop-filter: blur(32px);
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.07) inset,
-        0 50px 100px rgba(0,0,0,0.6),
-        0 0 140px rgba(42,75,219,0.15);
-      text-align: center;
-    }
+    /* ── Bottom dark panel ── */
+    .card-body { padding: 30px 28px 26px; }
 
-    /* inner corner gradient shimmer */
-    .card::before {
-      content: '';
-      position: absolute; inset: 0; border-radius: 34px;
-      background: linear-gradient(135deg,
-        rgba(91,130,255,0.14) 0%,
-        transparent 45%,
-        transparent 55%,
-        rgba(91,60,255,0.12) 100%);
-      pointer-events: none;
-    }
-
-    /* ── Icon orb ── */
-    .orb {
-      width: 140px; height: 140px;
-      margin: 0 auto 36px;
-      border-radius: 50%;
-      background: conic-gradient(from 180deg,
-        #1d3bcc 0%, #3b6aff 25%, #7b5ea7 50%, #c27b3a 75%, #1d3bcc 100%);
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-      box-shadow: 0 0 50px rgba(59,106,255,0.55), 0 0 100px rgba(59,106,255,0.22);
-      animation: orbPulse 4s ease-in-out infinite;
-    }
-    @keyframes orbPulse {
-      0%,100% { box-shadow: 0 0 50px rgba(59,106,255,0.55), 0 0 100px rgba(59,106,255,0.22); }
-      50%      { box-shadow: 0 0 70px rgba(59,106,255,0.8),  0 0 140px rgba(59,106,255,0.38); }
-    }
-    .orb::after {
-      content: '';
-      position: absolute; inset: 0; border-radius: 50%;
-      background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.22), transparent 58%);
-    }
-    .orb svg { width: 66px; height: 66px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.9)); position: relative; z-index: 1; }
-
-    /* ── Badge ── */
-    .fact-badge {
+    .badge {
       display: inline-flex; align-items: center; gap: 7px;
-      background: rgba(91,130,255,0.1);
-      border: 1px solid rgba(91,130,255,0.28);
-      border-radius: 20px; padding: 5px 14px;
-      font-size: 0.65rem; font-weight: 600;
-      color: #7fa8ff; letter-spacing: 0.14em;
-      text-transform: uppercase; margin-bottom: 14px;
+      font-size: 0.68rem; font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 14px;
     }
-    .fact-dot { width: 6px; height: 6px; border-radius: 50%; background: #7fa8ff; box-shadow: 0 0 6px #7fa8ff; animation: blink 1.8s ease-in-out infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+    .badge-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #7fa8ff; box-shadow: 0 0 6px #7fa8ff;
+      animation: blink 1.8s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-    /* ── Text ── */
     h1 {
-      font-size: 2.1rem; font-weight: 700;
-      color: #fff; line-height: 1.15;
-      margin-bottom: 16px; letter-spacing: -0.02em;
-    }
-    .desc {
-      font-size: 0.9rem; font-weight: 300;
-      color: rgba(255,255,255,0.55);
-      line-height: 1.8; letter-spacing: 0.01em;
-      margin-bottom: 38px;
-      min-height: 96px;
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 1.7rem;
+      color: #fff;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
     }
 
-    /* ── Button ── */
-    .btn {
-      display: block; width: 100%;
-      padding: 17px 24px;
-      background: #fff; color: #0d1228;
-      font-family: 'Sora', sans-serif;
-      font-size: 1rem; font-weight: 600;
-      border: none; border-radius: 18px;
-      cursor: pointer; letter-spacing: 0.02em;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-      box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+    .desc {
+      font-size: 0.87rem; font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      min-height: 68px;
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
-    .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(0,0,0,0.45); background: #eef2ff; }
-    .btn:active { transform: scale(0.98); }
+
+    .btn-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 18px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      background: transparent;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem; font-weight: 500;
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    }
+    .btn-pill:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+    .btn-pill:active { transform: scale(0.97); }
+
+    .divider { border-top: 1px solid rgba(255,255,255,0.08); margin: 26px 0 16px; }
+
+    .footer {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.74rem;
+      color: rgba(255,255,255,0.38);
+    }
+    .footer .brand { color: rgba(255,255,255,0.6); font-weight: 500; }
   </style>
 </head>
 <body>
 
-  <div class="bg"></div>
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
   <div class="blob blob-3"></div>
@@ -168,27 +150,42 @@
   <div class="card-wrap" id="cardWrap">
     <canvas id="borderCanvas"></canvas>
     <div class="card">
+    <div class="card-image">
+      <div class="caption">Think slow. Ship fast.</div>
+    </div>
 
-      <div class="orb">
-        <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L13.09 8.26L19 6L15.45 11.13L21 13.27L14.82 14.18L16 20L12 15.77L8 20L9.18 14.18L3 13.27L8.55 11.13L5 6L10.91 8.26L12 2Z"/>
-        </svg>
-      </div>
-
-      <div class="fact-badge">
-        <span class="fact-dot"></span>
-        <span id="factLabel">Daily Thought</span>
-      </div>
+    <div class="card-body">
+      <div class="badge"><span class="badge-dot"></span><span id="factLabel">Daily Thought</span></div>
 
       <h1>Hello, World! 👋</h1>
       <p class="desc" id="descText">Loading…</p>
-      <button class="btn" onclick="nextFact()">Next Thought &nbsp;→</button>
 
+      <button class="btn-pill" onclick="nextFact()">Next thought <span>→</span></button>
+
+      <div class="divider"></div>
+
+      <div class="footer">
+        <span class="brand">hello-world.dev</span>
+        <span>facts + code + curiosity</span>
+      </div>
+    </div>
     </div>
   </div>
 
   <script>
-    // ── Rotating facts ──
+    /* ============================================================
+       CARD IMAGE OVERRIDE — set this and it wins over the CSS
+       fallback image above. Set ONE of these:
+         1) A web URL:   'https://example.com/photo.jpg'
+         2) A local file: 'your-photo.jpg' (must sit next to this HTML file)
+         3) Leave as '' to keep using the CSS fallback image instead
+    ============================================================ */
+    const CARD_IMAGE_URL = '';
+
+    if (CARD_IMAGE_URL) {
+      document.querySelector('.card-image').style.backgroundImage = `url('${CARD_IMAGE_URL}')`;
+    }
+
     const facts = [
       "You are made of stardust — every atom in your body was forged inside a dying star billions of years ago. That's not poetry, that's physics.",
       "The human brain can store approximately 2.5 petabytes of information. You're literally walking around with a supercomputer between your ears.",
@@ -204,25 +201,23 @@
     function showFact(idx) {
       const desc = document.getElementById('descText');
       const label = document.getElementById('factLabel');
-      desc.style.opacity = 0; desc.style.transform = 'translateY(10px)';
+      desc.style.opacity = 0; desc.style.transform = 'translateY(8px)';
       setTimeout(() => {
         desc.textContent = facts[idx];
         label.textContent = labels[idx];
-        desc.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
         desc.style.opacity = 1; desc.style.transform = 'translateY(0)';
-      }, 230);
+      }, 200);
     }
     function nextFact() { current = (current + 1) % facts.length; showFact(current); }
 
-    document.getElementById('descText').style.transition = 'opacity 0.45s ease, transform 0.45s ease';
     showFact(0);
     setInterval(nextFact, 6000);
 
-    // ── Running light border (canvas) ──
+    /* ── Running light border ── */
     const wrap   = document.getElementById('cardWrap');
     const canvas = document.getElementById('borderCanvas');
     const ctx    = canvas.getContext('2d');
-    const R      = 36; // border-radius matching CSS
+    const R      = 27;
     let W, H;
 
     function resize() {
@@ -232,7 +227,6 @@
     resize();
     window.addEventListener('resize', resize);
 
-    // Build a rounded-rect path and return total perimeter length
     function buildPath() {
       const r = R;
       ctx.beginPath();
@@ -248,24 +242,22 @@
       ctx.closePath();
     }
 
-    // Approximate perimeter of the rounded rect
     function perimeter() {
       return 2*(W + H) - (8 - 2*Math.PI)*R;
     }
 
-    // Convert a 0-1 progress around the perimeter to an x,y point
     function pointAt(t) {
       const straights = [
-        { from:[R,0],       to:[W-R, 0],   len: W-2*R },   // top
-        { from:[W, R],      to:[W, H-R],   len: H-2*R },   // right
-        { from:[W-R, H],    to:[R, H],     len: W-2*R },   // bottom
-        { from:[0, H-R],    to:[0, R],     len: H-2*R },   // left
+        { from:[R,0],       to:[W-R, 0],   len: W-2*R },
+        { from:[W, R],      to:[W, H-R],   len: H-2*R },
+        { from:[W-R, H],    to:[R, H],     len: W-2*R },
+        { from:[0, H-R],    to:[0, R],     len: H-2*R },
       ];
       const corners = [
-        { cx:W-R, cy:R,   startA:-Math.PI/2, endA:0         },  // top-right
-        { cx:W-R, cy:H-R, startA:0,          endA:Math.PI/2 },  // bottom-right
-        { cx:R,   cy:H-R, startA:Math.PI/2,  endA:Math.PI   },  // bottom-left
-        { cx:R,   cy:R,   startA:Math.PI,    endA:3*Math.PI/2}, // top-left
+        { cx:W-R, cy:R,   startA:-Math.PI/2, endA:0         },
+        { cx:W-R, cy:H-R, startA:0,          endA:Math.PI/2 },
+        { cx:R,   cy:H-R, startA:Math.PI/2,  endA:Math.PI   },
+        { cx:R,   cy:R,   startA:Math.PI,    endA:3*Math.PI/2},
       ];
 
       const perim = perimeter();
@@ -299,43 +291,33 @@
     }
 
     let prog = 0;
-    // Two lights offset by half
     const lights = [
-      { offset: 0,   color1: '#ffffff', color2: '#5b82ff', color3: '#a855f7' },
-      { offset: 0.5, color1: '#ffffff', color2: '#f472b6', color3: '#7b2fff' },
+      { offset: 0,   color2: '#5b82ff', color3: '#a855f7' },
+      { offset: 0.5, color2: '#f472b6', color3: '#7b2fff' },
     ];
 
     function drawFrame() {
       ctx.clearRect(0, 0, W, H);
 
-      // Faint static border
       buildPath();
-      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1;
       ctx.stroke();
 
-      // Draw each running light
       lights.forEach(light => {
         const t = (prog + light.offset) % 1;
         const [x, y] = pointAt(t);
 
-        // Outer large glow
-        const glow = ctx.createRadialGradient(x, y, 0, x, y, 55);
-        glow.addColorStop(0,   light.color3.replace(')', ',0.35)').replace('rgb','rgba').replace('#', 'rgba(').replace('rgba(','rgba(').replace(/rgba\(([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i, (_, r, g, b) => `rgba(${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)}`));
-        glow.addColorStop(1,   'rgba(0,0,0,0)');
-
-        // Simpler approach for glow
         ctx.save();
         ctx.globalCompositeOperation = 'screen';
         const g2 = ctx.createRadialGradient(x, y, 0, x, y, 60);
-        g2.addColorStop(0, 'rgba(160,120,255,0.5)');
-        g2.addColorStop(0.4, 'rgba(91,130,255,0.2)');
+        g2.addColorStop(0, 'rgba(160,120,255,0.55)');
+        g2.addColorStop(0.4, 'rgba(91,130,255,0.22)');
         g2.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = g2;
         ctx.beginPath(); ctx.arc(x, y, 60, 0, Math.PI*2); ctx.fill();
         ctx.restore();
 
-        // Bright core dot
         ctx.save();
         const core = ctx.createRadialGradient(x, y, 0, x, y, 10);
         core.addColorStop(0, 'rgba(255,255,255,1)');
@@ -345,13 +327,12 @@
         ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.fill();
         ctx.restore();
 
-        // Trail: draw segments behind the dot
         const trailLen = 0.12;
         const steps = 40;
         for (let i = 0; i < steps; i++) {
           const tp = ((t - (i/steps)*trailLen) + 1) % 1;
           const [tx, ty] = pointAt(tp);
-          const alpha = (1 - i/steps) * 0.55;
+          const alpha = (1 - i/steps) * 0.6;
           const size  = (1 - i/steps) * 3.5;
           ctx.save();
           ctx.globalAlpha = alpha;
