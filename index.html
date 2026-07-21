@@ -2,81 +2,338 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hello World Card</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Design Challenge — Connecting Card</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=array@400,500&f[]=khand@400,500,600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    /* Paste any image URL here to set the CARD background */
-    --card-bg-url: url('96a6b1e351ec68133e63733eb1835911.jpg');
+  /* ============================================================
+     IMAGE CONFIG — swap these two URLs to change the visuals.
+     BG_IMAGE_URL   -> full page background
+     CARD_IMAGE_URL -> portrait shown inside the phone-style card
+     ============================================================ */
+  :root{
+    --bg-image-url: url("https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1600&auto=format&fit=crop");
+    --card-image-url: url("https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop");
 
-    /* Paste any image URL here to set the PAGE background (use none for plain color) */
-    --page-bg-url: url('73c5b2afc684e0e6bc1b9469e5120b88.jpg');
+    --paper: #f6f5f2;
+    --ink: #14181b;
+    --ink-soft: #6b7178;
+    --pill-border: #dfded9;
+    --white: #ffffff;
+    --shadow: rgba(20, 24, 27, 0.14);
+    --card-radius: 34px;
   }
 
-  * { box-sizing: border-box; }
+  *{ box-sizing: border-box; }
 
-  html, body {
+  html, body{
     margin: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #e9eaec;
-    background-image: var(--page-bg-url);
+    padding: 0;
+    min-height: 100%;
+    font-family: "Khand", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  body{
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(180deg, rgba(246,245,242,0.94) 0%, rgba(246,245,242,0.88) 55%, rgba(246,245,242,0.96) 100%),
+      var(--bg-image-url);
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    color: var(--ink);
+    overflow-x: hidden;
   }
 
-  .frame {
-    width: 340px;
-    padding: 14px;
-    border-radius: 44px;
-    background: linear-gradient(160deg, #ffffff, #dcdde0);
-    box-shadow:
-      0 40px 60px rgba(0,0,0,0.18),
-      0 10px 20px rgba(0,0,0,0.08),
-      inset 0 1px 0 rgba(255,255,255,0.8);
-  }
-
-  .card {
+  /* ---------- card stage + ambient moving lights ---------- */
+  .stage{
     position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 32px;
-    overflow: hidden;
-    background-image: var(--card-bg-url);
-    background-size: cover;
-    background-position: center;
+    width: 340px;
+    max-width: 88vw;
+    aspect-ratio: 340 / 450;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .card::after {
+  @property --glow-angle{
+    syntax: '<angle>';
+    inherits: true;
+    initial-value: 225deg;
+  }
+
+  .glow{
+    position: absolute;
+    inset: 0;
+    border-radius: var(--card-radius);
+    z-index: 0;
+    pointer-events: none;
+    animation: glow-spin 7s linear infinite;
+  }
+
+  /* soft bloom bleeding out behind the card */
+  .glow::before{
+    content: "";
+    position: absolute;
+    inset: -14px;
+    border-radius: calc(var(--card-radius) + 14px);
+    background: conic-gradient(
+      from var(--glow-angle),
+      #8b5cf6 0deg,
+      #a78bfa 70deg,
+      #6d5ce6 140deg,
+      #ff8a3d 210deg,
+      #ffcf5c 250deg,
+      #8b5cf6 360deg
+    );
+    filter: blur(20px);
+    opacity: 0.85;
+  }
+
+  /* crisp bright line hugging the card's exact edge */
+  .glow::after{
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%);
+    border-radius: var(--card-radius);
+    padding: 2.5px;
+    background: conic-gradient(
+      from var(--glow-angle),
+      #a78bfa 0deg,
+      #c4b5fd 70deg,
+      #8b6cf0 140deg,
+      #ff9a4d 210deg,
+      #ffe08a 250deg,
+      #a78bfa 360deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: blur(0.4px) drop-shadow(0 0 6px rgba(180,140,255,0.55));
   }
 
-  .label {
+  @keyframes glow-spin{
+    to{ --glow-angle: 585deg; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .glow{ animation: none; }
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    width: 100%;
+    max-width: 1160px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 90px;
+  }
+
+  .pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    border: 1px solid var(--pill-border);
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+
+  .pill svg{ width: 17px; height: 17px; flex-shrink: 0; }
+
+  /* ---------- main card ---------- */
+  .card{
     position: relative;
     z-index: 1;
-    color: #ffffff;
-    font-size: 32px;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    background-image:
+      linear-gradient(180deg, rgba(120,150,190,0.55) 0%, rgba(140,165,150,0.35) 45%, rgba(110,130,80,0.65) 100%),
+      var(--card-image-url);
+    background-size: cover;
+    background-position: center 30%;
+    box-shadow:
+      0 40px 80px -20px var(--shadow),
+      0 10px 30px -10px rgba(20,24,27,0.18);
+  }
+
+  .card::after{
+    /* bottom scrim so the name row / footer stay legible over any photo */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.35) 100%);
+    pointer-events: none;
+  }
+
+  .card-header{
+    position: relative;
+    z-index: 2;
+    padding: 26px 26px 0;
+    color: var(--white);
+  }
+
+  .card-header h1{
+    margin: 0 0 8px;
+    font-family: "Array", "Khand", sans-serif;
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+
+  .status{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.92);
+  }
+
+  .spinner{
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: #ffffff;
+    animation: spin 0.9s linear infinite;
+  }
+
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .card-footer{
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .user-chip{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--white);
+  }
+
+  .avatar{
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #cbb7a8;
+    background-image: url("https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop");
+    background-size: cover;
+    background-position: center;
+    border: 2px solid rgba(255,255,255,0.85);
+    flex-shrink: 0;
+  }
+
+  .user-chip .handle{
+    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.5px;
-    text-align: center;
-    text-transform: lowercase;
+    line-height: 1.25;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.25);
+  }
+
+  .user-chip .time{
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.25;
+  }
+
+  .add-member{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--white);
+    color: var(--ink);
+    border: none;
+    border-radius: 999px;
+    padding: 11px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .add-member:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+  }
+
+  .add-member:focus-visible{
+    outline: 3px solid #14181b;
+    outline-offset: 2px;
+  }
+
+  /* ---------- credit footer ---------- */
+  .credit{
+    margin-top: 70px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .credit .avatar{
+    width: 42px;
+    height: 42px;
+    background-color: #bcdff0;
+    background-image: url("https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?q=80&w=200&auto=format&fit=crop");
+    border: none;
+  }
+
+  .credit .name{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .credit .role{
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .spinner{ animation: none; }
+  }
+
+  @media (max-width: 480px){
+    .topbar{ margin-bottom: 60px; }
+    .pill{ font-size: 13px; padding: 8px 14px; }
+    .card{ width: 300px; }
   }
 </style>
 </head>
 <body>
 
-  <div class="frame">
+  <div class="stage">
+    <div class="glow"></div>
+
     <div class="card">
-      <div class="label">hello world</div>
+      <div class="card-header">
+        <h1>Hello World</h1>
+      </div>
     </div>
   </div>
 
