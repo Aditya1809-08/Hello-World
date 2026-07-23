@@ -3,339 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hello world</title>
+<title>Choose offer type</title>
 <link rel="preconnect" href="https://api.fontshare.com">
-<link href="https://api.fontshare.com/v2/css?f[]=array@400,500&f[]=khand@400,500,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=trench-slab@500&f[]=general-sans@400,500&display=swap">
 <style>
-  /* ============================================================
-     IMAGE CONFIG — swap these two URLs to change the visuals.
-     BG_IMAGE_URL   -> full page background
-     CARD_IMAGE_URL -> portrait shown inside the phone-style card
-     ============================================================ */
   :root{
-    --bg-image-url: url("bgbg.png");
-    --card-image-url: url("3e3d644bb2caf6bcb53d563b357c8fc6.webp");
+    --bg: #060706;
+    --panel: #0d0f0d;
+    --panel-2: #101210;
+    --line: rgba(255,255,255,0.06);
+    --muted: rgba(255,255,255,0.08);
+    --chip: #12140f;
+    --green: #35e07a;
+    --green-dim: #1c7a45;
+    --arrow-bg: #16181a;
 
-    --paper: #f6f5f2;
-    --ink: #14181b;
-    --ink-soft: #6b7178;
-    --pill-border: #dfded9;
-    --white: #ffffff;
-    --shadow: rgba(20, 24, 27, 0.14);
-    --card-radius: 34px;
+    /* ---- BACKGROUND IMAGE OPTION ----
+       To use a custom image as the page background, set a URL here:
+       --page-bg-image: url('https://example.com/your-image.jpg');
+       Leave as none to keep the plain light background. */
+    --page-bg-image: none;
+    --page-bg-color: #f2f3f5;
   }
 
-  *{ box-sizing: border-box; }
+  *{ box-sizing:border-box; }
 
-  html, body{
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
-    font-family: "Khand", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  }
-
-  body{
-    background-color: var(--paper);
-    background-image:
-      linear-gradient(180deg, rgba(246,245,242,0.94) 0%, rgba(246,245,242,0.88) 55%, rgba(246,245,242,0.96) 100%),
-      var(--bg-image-url);
+  html,body{
+    height:100%;
+    margin:0;
+    background-color: var(--page-bg-color);
+    background-image: var(--page-bg-image);
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 24px;
-    color: var(--ink);
-    overflow-x: hidden;
+    background-repeat: no-repeat;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 40px;
+    font-family: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
-  /* ---------- card stage + ambient moving lights ---------- */
-  .stage{
-    position: relative;
-    width: 340px;
-    max-width: 88vw;
-    aspect-ratio: 340 / 450;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .card-wrap{
+    position:relative;
+    width: clamp(280px, 88vw, 340px);
+    border-radius:28px;
+    padding:1.5px; /* border thickness for the running light */
+    isolation:isolate;
   }
 
-  @property --glow-angle{
-    syntax: '<angle>';
-    inherits: true;
-    initial-value: 225deg;
-  }
-
-  .glow{
-    position: absolute;
-    inset: 0;
-    border-radius: var(--card-radius);
-    z-index: 0;
-    pointer-events: none;
-    animation: glow-spin 7s linear infinite;
-  }
-
-  /* soft bloom bleeding out behind the card */
-  .glow::before{
-    content: "";
-    position: absolute;
-    inset: -14px;
-    border-radius: calc(var(--card-radius) + 14px);
+  /* running light around the edge */
+  .card-wrap::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:28px;
+    padding:1.5px;
     background: conic-gradient(
-      from var(--glow-angle),
-      #8b5cf6 0deg,
-      #a78bfa 70deg,
-      #6d5ce6 140deg,
-      #ff8a3d 210deg,
-      #ffcf5c 250deg,
-      #8b5cf6 360deg
+      from 0deg,
+      #ff5f6d,
+      #ffc371,
+      #f9f871,
+      #6dffb0,
+      #4fd6ff,
+      #6a7dff,
+      #c66fff,
+      #ff5fa8,
+      #ff5f6d
     );
-    filter: blur(20px);
-    opacity: 0.85;
-  }
-
-  /* crisp bright line hugging the card's exact edge */
-  .glow::after{
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: var(--card-radius);
-    padding: 2.5px;
-    background: conic-gradient(
-      from var(--glow-angle),
-      #a78bfa 0deg,
-      #c4b5fd 70deg,
-      #8b6cf0 140deg,
-      #ff9a4d 210deg,
-      #ffe08a 250deg,
-      #a78bfa 360deg
-    );
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    filter: blur(0.4px) drop-shadow(0 0 6px rgba(180,140,255,0.55));
+            mask-composite: exclude;
+    animation: spin 6s linear infinite;
+    filter: blur(2.5px) saturate(1.4) drop-shadow(0 0 10px rgba(255,255,255,0.25));
+    z-index: 2;
   }
 
-  @keyframes glow-spin{
-    to{ --glow-angle: 585deg; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .glow{ animation: none; }
-  }
-
-  /* ---------- top bar ---------- */
-  .topbar{
-    width: 100%;
-    max-width: 1160px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 90px;
-  }
-
-  .pill{
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--white);
-    border: 1px solid var(--pill-border);
-    border-radius: 999px;
-    padding: 10px 20px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-  }
-
-  .pill svg{ width: 17px; height: 17px; flex-shrink: 0; }
-
-  /* ---------- main card ---------- */
-  .card{
-    position: relative;
+  /* faint static border underneath so the card has an edge even between light passes */
+  .card-wrap::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:28px;
+    padding:1.5px;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255,95,109,0.35),
+      rgba(255,195,113,0.35),
+      rgba(249,248,113,0.35),
+      rgba(109,255,176,0.35),
+      rgba(79,214,255,0.35),
+      rgba(106,125,255,0.35),
+      rgba(198,111,255,0.35),
+      rgba(255,95,168,0.35),
+      rgba(255,95,109,0.35)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
     z-index: 1;
-    width: 100%;
-    height: 100%;
-    border-radius: var(--card-radius);
-    overflow: hidden;
-    background-image:
-      linear-gradient(180deg, rgba(120,150,190,0.55) 0%, rgba(140,165,150,0.35) 45%, rgba(110,130,80,0.65) 100%),
-      var(--card-image-url);
-    background-size: cover;
-    background-position: center 30%;
+  }
+
+  /* soft outer bloom, matching the diffuse rainbow halo in the reference */
+  .card-wrap .glow{
+    content:"";
+    position:absolute;
+    inset:-14px;
+    border-radius:36px;
+    padding:2px;
+    background: conic-gradient(
+      from 0deg,
+      #ff5f6d,
+      #ffc371,
+      #f9f871,
+      #6dffb0,
+      #4fd6ff,
+      #6a7dff,
+      #c66fff,
+      #ff5fa8,
+      #ff5f6d
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: spin 6s linear infinite;
+    filter: blur(18px) saturate(1.5);
+    opacity: 0.85;
+    z-index: 0;
+    pointer-events:none;
+  }
+
+  @keyframes spin{
+    to{ transform: rotate(360deg); }
+  }
+
+  .card{
+    position:relative;
+    z-index: 3;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(53,224,122,0.07), transparent 45%),
+      linear-gradient(180deg, #0c0e0c 0%, #08090a 100%);
+    border-radius: 26px;
     box-shadow:
-      0 40px 80px -20px var(--shadow),
-      0 10px 30px -10px rgba(20,24,27,0.18);
+      0 30px 60px -20px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(255,255,255,0.03);
   }
 
-  .card::after{
-    /* bottom scrim so the name row / footer stay legible over any photo */
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.35) 100%);
-    pointer-events: none;
+  .content{
+    width:100%;
+    padding: 28px 26px 30px;
   }
 
-  .card-header{
-    position: relative;
-    z-index: 2;
-    padding: 26px 26px 0;
-    color: var(--white);
+  /* faint dot grid like the reference */
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:26px;
+    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 16px 16px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 75%);
+            mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 75%);
+    pointer-events:none;
   }
 
-  .card-header h1{
-    margin: 0 0 8px;
-    font-family: "Array", "Khand", sans-serif;
-    font-size: 26px;
+  /* progress dashes */
+  .progress{
+    position:relative;
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    margin-bottom: 34px;
+  }
+  .progress span{
+    width: 26px;
+    height: 4px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #35e07a, #8dffbe);
+    box-shadow: 0 0 8px rgba(53,224,122,0.6);
+  }
+
+  /* folder / document icon */
+  .icon-hero{
+    position:relative;
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 22px;
+  }
+  .icon-hero .paper{
+    position:absolute;
+    left: 16px;
+    top: 6px;
+    width: 52px;
+    height: 62px;
+    background: linear-gradient(180deg,#fbfbfb,#e9e9e9);
+    border-radius: 6px;
+    transform: rotate(-4deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.35);
+  }
+  .icon-hero .paper::before{
+    content:"";
+    position:absolute;
+    left:10px; right:10px; top:14px;
+    height:6px;
+    border-radius:3px;
+    background: rgba(0,0,0,0.12);
+  }
+  .icon-hero .paper::after{
+    content:"";
+    position:absolute;
+    left:10px; right:22px; top:26px;
+    height:4px;
+    border-radius:2px;
+    background: rgba(0,0,0,0.08);
+    box-shadow: 0 10px 0 rgba(0,0,0,0.08), 0 20px 0 rgba(0,0,0,0.08);
+  }
+  .icon-hero .folder{
+    position:absolute;
+    left: 8px;
+    bottom: 8px;
+    width: 72px;
+    height: 40px;
+    background: linear-gradient(180deg,#3a3d3f,#232527);
+    border-radius: 10px;
+    box-shadow:
+      0 10px 20px rgba(0,0,0,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .icon-hero .folder::before{
+    content:"";
+    position:absolute;
+    left:14px; right:14px; top:-6px;
+    height:12px;
+    background: #2d2f31;
+    border-radius: 6px 6px 0 0;
+  }
+
+  /* placeholder text bars (all text removed, replaced with blank bars) */
+  .bar{
+    border-radius: 6px;
+    background: rgba(255,255,255,0.10);
+  }
+  .hero-title{
+    margin: 0 auto 14px;
+    text-align: center;
+    font-family: "Trench Slab", "General Sans", serif;
+    font-size: clamp(28px, 7vw, 40px);
+    line-height: 1.15;
     font-weight: 500;
-    letter-spacing: 0.2px;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    letter-spacing: -0.5px;
+    background: linear-gradient(180deg, #ffffff 0%, #cfd3d1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .subtitle-bar{
+    width: 78%;
+    height: 12px;
+    margin: 0 auto 6px;
+  }
+  .subtitle-bar.short{
+    width: 50%;
+    margin-bottom: 26px;
   }
 
-  .status{
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 15px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.92);
+  /* list rows */
+  .rows{
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+    margin-bottom: 22px;
   }
-
-  .spinner{
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.35);
-    border-top-color: #ffffff;
-    animation: spin 0.9s linear infinite;
+  .row{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    padding: 8px 4px;
+    border-radius: 14px;
+    transition: background .2s ease;
   }
-
-  @keyframes spin{ to{ transform: rotate(360deg); } }
-
-  .card-footer{
-    position: absolute;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+  .row:hover{
+    background: rgba(255,255,255,0.03);
   }
-
-  .user-chip{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--white);
+  .row-icon{
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(160deg, #17301f, #0e1a12);
+    border: 1px solid rgba(53,224,122,0.18);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 20px;
   }
-
-  .avatar{
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background-color: #cbb7a8;
-    background-image: url("https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop");
-    background-size: cover;
-    background-position: center;
-    border: 2px solid rgba(255,255,255,0.85);
-    flex-shrink: 0;
+  .row-text{
+    flex: 1 1 auto;
+    display:flex;
+    flex-direction:column;
+    gap: 4px;
+    min-width: 0;
   }
-
-  .user-chip .handle{
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.25;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.25);
-  }
-
-  .user-chip .time{
-    font-size: 12px;
-    color: rgba(255,255,255,0.8);
-    line-height: 1.25;
-  }
-
-  .add-member{
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--white);
-    color: var(--ink);
-    border: none;
-    border-radius: 999px;
-    padding: 11px 16px;
-    font-size: 14px;
-    font-weight: 700;
-    white-space: nowrap;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .add-member:hover{
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.22);
-  }
-
-  .add-member:focus-visible{
-    outline: 3px solid #14181b;
-    outline-offset: 2px;
-  }
-
-  /* ---------- credit footer ---------- */
-  .credit{
-    margin-top: 70px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .credit .avatar{
-    width: 42px;
-    height: 42px;
-    background-color: #bcdff0;
-    background-image: url("https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?q=80&w=200&auto=format&fit=crop");
-    border: none;
-  }
-
-  .credit .name{
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--ink);
-  }
-
-  .credit .role{
+  .row-fact{
+    font-family: "General Sans", sans-serif;
     font-size: 13px;
-    color: var(--ink-soft);
+    line-height: 1.4;
+    color: rgba(255,255,255,0.82);
+    font-weight: 500;
   }
-
+  .row-fact-sub{
+    font-family: "General Sans", sans-serif;
+    font-size: 11px;
+    line-height: 1.4;
+    color: rgba(255,255,255,0.4);
+  }
+  .change-row{
+    display:flex;
+    justify-content:center;
+    margin-top: 22px;
+  }
+  .change-btn{
+    font-family: "General Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #eafff2;
+    background: linear-gradient(160deg, #1c7a45, #0e3a22);
+    border: 1px solid rgba(53,224,122,0.4);
+    padding: 10px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 0 0 rgba(53,224,122,0);
+  }
+  .change-btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(53,224,122,0.25);
+  }
+  .change-btn:active{
+    transform: translateY(0);
+  }
   @media (prefers-reduced-motion: reduce){
-    .spinner{ animation: none; }
-  }
-
-  @media (max-width: 480px){
-    .topbar{ margin-bottom: 60px; }
-    .pill{ font-size: 13px; padding: 8px 14px; }
-    .card{ width: 300px; }
+    .card-wrap::before{ animation: none; }
   }
 </style>
 </head>
 <body>
 
-  <div class="stage">
-    <div class="glow"></div>
+<div class="card-wrap">
+  <div class="glow"></div>
+  <div class="card">
+    <div class="content">
 
-    <div class="card">
-      <div class="card-header">
-        <h1>Hello World</h1>
+    <div class="progress">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="icon-hero">
+      <div class="folder"></div>
+      <div class="paper"></div>
+    </div>
+
+    <h1 class="hero-title">Hello, World!</h1>
+    <div class="bar subtitle-bar"></div>
+    <div class="bar subtitle-bar short"></div>
+
+    <div class="rows" id="factRows">
+
+      <div class="row">
+        <div class="row-icon" data-emoji></div>
+        <div class="row-text">
+          <div class="row-fact" data-fact></div>
+          <div class="row-fact-sub" data-source></div>
+        </div>
       </div>
+
+      <div class="row">
+        <div class="row-icon" data-emoji></div>
+        <div class="row-text">
+          <div class="row-fact" data-fact></div>
+          <div class="row-fact-sub" data-source></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-icon" data-emoji></div>
+        <div class="row-text">
+          <div class="row-fact" data-fact></div>
+          <div class="row-fact-sub" data-source></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="change-row">
+      <button class="change-btn" onclick="showNewFacts()">Change facts</button>
+    </div>
+
     </div>
   </div>
+</div>
+
+<script>
+  const factPool = [
+    { emoji: "🐙", fact: "Octopuses have three hearts and blue blood.", source: "Marine biology" },
+    { emoji: "🍯", fact: "Honey never spoils if stored properly.", source: "Food science" },
+    { emoji: "🌋", fact: "There are more possible chess games than atoms in the universe.", source: "Mathematics" },
+    { emoji: "🦈", fact: "Sharks existed before trees appeared on Earth.", source: "Paleontology" },
+    { emoji: "🌙", fact: "The Moon is slowly drifting away from Earth each year.", source: "Astronomy" },
+    { emoji: "🐝", fact: "Bees can recognize individual human faces.", source: "Animal cognition" },
+    { emoji: "🧠", fact: "The human brain uses about 20% of the body's energy.", source: "Neuroscience" },
+    { emoji: "🦩", fact: "Flamingos are born gray, not pink.", source: "Zoology" },
+    { emoji: "❄️", fact: "No two snowflakes have ever been proven identical.", source: "Physics" },
+    { emoji: "🐢", fact: "Some tortoises can live longer than 150 years.", source: "Biology" },
+    { emoji: "🌊", fact: "Over 80% of the ocean remains unmapped and unexplored.", source: "Oceanography" },
+    { emoji: "🍎", fact: "Apples float in water because they're 25% air.", source: "Fun science" },
+    { emoji: "🌌", fact: "A day on Venus is longer than its year.", source: "Astronomy" },
+    { emoji: "🐜", fact: "Ants can carry objects many times their own body weight.", source: "Entomology" },
+    { emoji: "🎻", fact: "Sound travels about four times faster in water than in air.", source: "Physics" },
+  ];
+
+  function pickThreeRandom(pool){
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
+  }
+
+  function renderFacts(facts){
+    const rows = document.querySelectorAll('#factRows .row');
+    rows.forEach((row, i) => {
+      const f = facts[i];
+      row.querySelector('[data-emoji]').textContent = f.emoji;
+      row.querySelector('[data-fact]').textContent = f.fact;
+      row.querySelector('[data-source]').textContent = f.source;
+    });
+  }
+
+  function showNewFacts(){
+    renderFacts(pickThreeRandom(factPool));
+  }
+
+  renderFacts(pickThreeRandom(factPool));
+</script>
 
 </body>
 </html>
