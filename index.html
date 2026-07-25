@@ -29,7 +29,7 @@
        To use a custom image as the page background, set a URL here:
        --page-bg-image: url('https://example.com/your-image.jpg');
        Leave as none to keep the plain light background. */
-    --page-bg-image: url('c57550e5edd26f0f09d6661dbbf4b8df.jpg');
+    --page-bg-image:  url('c57550e5edd26f0f09d6661dbbf4b8df.jpg');
     --page-bg-color: #eef0f3;
   }
 
@@ -77,22 +77,6 @@
     box-shadow: 0 24px 50px -20px rgba(0,0,0,0.2);
   }
 
-  /* soft white edge, like the reference card */
-  .card-wrap::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:28px;
-    padding:1.5px;
-    background: linear-gradient(160deg, rgba(255,255,255,0.9), rgba(255,255,255,0.15));
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    z-index: 2;
-  }
-
   @keyframes spin{
     to{ transform: rotate(360deg); }
   }
@@ -103,6 +87,7 @@
     background:
       radial-gradient(circle at 15% 10%, rgba(255,255,255,0.35), transparent 40%),
       linear-gradient(165deg, var(--sunset-peach) 0%, var(--sunset-coral) 26%, var(--sunset-orchid) 52%, var(--sunset-violet) 74%, var(--sunset-blue) 100%);
+    border: 1px solid rgba(255,255,255,0.45);
     border-radius: 26px;
     box-shadow:
       0 40px 70px -25px rgba(60,40,120,0.45),
@@ -343,12 +328,38 @@
   .change-btn:active{
     transform: translateY(0);
   }
-  @media (prefers-reduced-motion: reduce){
-    .card-wrap::before{ animation: none; }
+  /* falling snow */
+  .snow-layer{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 50;
+  }
+  .snowflake{
+    position: absolute;
+    top: -10px;
+    background: #ffffff;
+    border-radius: 50%;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.6));
+    animation-name: snow-fall, snow-sway;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+  }
+  @keyframes snow-fall{
+    from{ transform: translateY(-10px); }
+    to{ transform: translateY(110vh); }
+  }
+  @keyframes snow-sway{
+    0%, 100%{ margin-left: 0px; }
+    50%{ margin-left: 24px; }
   }
 </style>
 </head>
 <body>
+
+<div class="snow-layer" id="snowLayer"></div>
 
 <div class="card-wrap">
   <div class="stack s2"></div>
@@ -455,6 +466,31 @@
   }
 
   renderFacts(pickThreeRandom(factPool));
+
+  // falling snow
+  (function createSnow(){
+    const layer = document.getElementById('snowLayer');
+    const count = 60;
+    for(let i = 0; i < count; i++){
+      const flake = document.createElement('div');
+      flake.className = 'snowflake';
+      const size = Math.random() * 4 + 2; // 2px - 6px
+      const left = Math.random() * 100; // vw
+      const fallDuration = Math.random() * 10 + 8; // 8s - 18s
+      const swayDuration = Math.random() * 4 + 3; // 3s - 7s
+      const delay = Math.random() * -20; // negative so they start mid-fall
+      const opacity = Math.random() * 0.5 + 0.4;
+
+      flake.style.width = size + 'px';
+      flake.style.height = size + 'px';
+      flake.style.left = left + 'vw';
+      flake.style.opacity = opacity;
+      flake.style.animationDuration = fallDuration + 's, ' + swayDuration + 's';
+      flake.style.animationDelay = delay + 's, ' + delay + 's';
+
+      layer.appendChild(flake);
+    }
+  })();
 </script>
 
 </body>
