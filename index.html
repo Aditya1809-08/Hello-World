@@ -94,8 +94,10 @@
       }
 
       .stage {
-        display: grid;
-        place-items: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
         padding: 48px 0 64px;
       }
 
@@ -231,6 +233,69 @@
         line-height: 1.65;
       }
 
+      .code-card {
+        width: min(100%, 420px);
+        min-height: 0;
+        padding: 14px 18px 16px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(156, 167, 255, 0.42);
+        border-radius: 16px;
+        background: rgba(7, 10, 35, 0.24);
+        -webkit-backdrop-filter: blur(18px) saturate(135%);
+        backdrop-filter: blur(18px) saturate(135%);
+        box-shadow:
+          0 0 0 1px rgba(189, 211, 255, 0.12),
+          0 0 30px rgba(91, 137, 255, 0.38),
+          0 0 72px rgba(93, 103, 255, 0.28),
+          0 18px 46px rgba(126, 207, 255, 0.2),
+          inset 0 0 28px rgba(113, 123, 255, 0.08);
+        text-align: left;
+      }
+
+      .code-card::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border: 1px solid rgba(219, 223, 255, 0.12);
+        border-radius: 11px;
+        pointer-events: none;
+      }
+
+      .code-card-header {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 15px;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+      }
+
+      .code-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #86efac;
+        box-shadow: 0 0 10px rgba(134, 239, 172, 0.8);
+      }
+
+      .code-card pre {
+        margin: 0;
+        color: #b9c4ff;
+        font: 600 0.84rem/1.7 "JetBrains Mono", monospace;
+        white-space: pre-wrap;
+      }
+
+      .code-card .code-keyword {
+        color: #c4b5fd;
+      }
+
+      .code-card .code-string {
+        color: #86efac;
+      }
+
       .explore-button {
         display: inline-flex;
         align-items: center;
@@ -289,12 +354,17 @@
         }
 
         .stage {
+          gap: 20px;
           padding: 38px 0 52px;
         }
 
         .hello-card {
           min-height: 430px;
           padding: 44px 28px 34px;
+        }
+
+        .code-card {
+          padding: 20px 18px;
         }
       }
 
@@ -333,6 +403,15 @@
           >
             Explore it <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
           </a>
+        </article>
+
+        <article class="code-card" aria-label="Coding note">
+          <div class="code-card-header">
+            <span class="code-dot" aria-hidden="true"></span>
+            <span>hello-world.js</span>
+          </div>
+          <pre><span class="code-keyword">const</span> message = <span class="code-string">"Keep building."</span>;
+console.log(message);</pre>
         </article>
       </section>
 
