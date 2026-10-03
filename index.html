@@ -1,497 +1,361 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>,m,ca 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hello People👋</title>
-<link rel="preconnect" href="https://api.fontshare.com">
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=trench-slab@500&f[]=general-sans@400,500&display=swap">
-<style>
-  :root{
-    --bg: #060706;
-    --panel: #0d0f0d;
-    --panel-2: #101210;
-    --line: rgba(255,255,255,0.06);
-    --muted: rgba(255,255,255,0.08);
-    --chip: #12140f;
-    --green: #35e07a;
-    --green-dim: #1c7a45;
-    --arrow-bg: #16181a;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello World — Light Leak Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --background: #06051d;
+        --surface: #0d0d2d;
+        --surface-soft: #121235;
+        --text: #f7f7ff;
+        --muted: #9b9bb9;
+        --accent: #9ca7ff;
+        --accent-bright: #dfe2ff;
+        --line: rgba(199, 205, 255, 0.42);
+      }
 
-    /* sunset gradient palette for the card */
-    --sunset-peach: #ffd9bf;
-    --sunset-coral: #ff9fb8;
-    --sunset-orchid: #c68af0;
-    --sunset-violet: #8b6bf0;
-    --sunset-blue: #4d63ff;
+      * {
+        box-sizing: border-box;
+      }
 
-    /* ---- BACKGROUND IMAGE OPTION ----
-       To use a custom image as the page background, set a URL here:
-       --page-bg-image: url('https://example.com/your-image.jpg');
-       Leave as none to keep the plain light background. */
-    --page-bg-image: url('Backgroundq.png');
-    --page-bg-color: #eef0f3;
-  }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        background: var(--background);
+        color: var(--text);
+        font-family: "Inter", system-ui, sans-serif;
+      }
 
-  *{ box-sizing:border-box; }
+      .page {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: 56px clamp(28px, 8vw, 112px) 42px;
+        position: relative;
+        isolation: isolate;
+      }
 
-  html,body{
-    height:100%;
-    margin:0;
-    background-color: var(--page-bg-color);
-    background-image: var(--page-bg-image), radial-gradient(ellipse 1200px 700px at 50% 0%, #ffffff, transparent 65%), linear-gradient(150deg, #f1f2f5 0%, #e2e4e9 55%, #d3d6dc 100%);
-    background-size: cover, cover, cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding: 40px;
-    font-family: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
+      .page::before {
+        content: "";
+        position: absolute;
+        width: min(440px, 55vw);
+        height: min(440px, 55vw);
+        top: 13%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background: #1d2aa0;
+        opacity: 0.22;
+        filter: blur(105px);
+        z-index: -1;
+      }
 
-  .card-wrap{
-    position:relative;
-    width: clamp(480px, 90vw, 720px);
-    border-radius:28px;
-    padding:1.5px; /* border thickness for the running light */
-    isolation:isolate;
-  }
+      .page::after {
+        content: "";
+        position: fixed;
+        inset: -18px;
+        background: url("./flowers-background.png") center / cover no-repeat;
+        filter: blur(6px) brightness(0.32) saturate(0.78);
+        opacity: 0.62;
+        z-index: -2;
+      }
 
-  /* stacked-paper shadow layers behind the card, like the reference */
-  .card-wrap .stack{
-    position:absolute;
-    inset:0;
-    border-radius:30px;
-    background: #f3f4f6;
-    z-index:-1;
-  }
-  .card-wrap .stack.s1{
-    transform: translate(10px, 14px) rotate(1.4deg);
-    background: rgba(255,255,255,0.75);
-    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.25);
-  }
-  .card-wrap .stack.s2{
-    transform: translate(20px, 26px) rotate(2.6deg);
-    background: rgba(255,255,255,0.55);
-    box-shadow: 0 24px 50px -20px rgba(0,0,0,0.2);
-  }
+      .topbar,
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--accent-bright);
+        font-size: clamp(0.82rem, 1.2vw, 1rem);
+        letter-spacing: 0.01em;
+      }
 
-  @keyframes spin{
-    to{ transform: rotate(360deg); }
-  }
+      .topbar span:last-child,
+      .footer span:last-child {
+        color: var(--text);
+      }
 
-  .card{
-    position:relative;
-    z-index: 3;
-    background:
-      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.35), transparent 40%),
-      linear-gradient(165deg, var(--sunset-peach) 0%, var(--sunset-coral) 26%, var(--sunset-orchid) 52%, var(--sunset-violet) 74%, var(--sunset-blue) 100%);
-    border: 1px solid rgba(255,255,255,0.45);
-    border-radius: 26px;
-    box-shadow:
-      0 40px 70px -25px rgba(60,40,120,0.45),
-      inset 0 1px 0 rgba(255,255,255,0.4);
-    overflow:hidden;
-  }
+      .stage {
+        display: grid;
+        place-items: center;
+        padding: 48px 0 64px;
+      }
 
-  .content{
-    width:100%;
-    padding: 34px 40px;
-    display:grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 36px;
-    align-items:center;
-  }
-  .content-left{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-  }
-  .content-right{
-    display:flex;
-    flex-direction:column;
-  }
-  @media (max-width: 620px){
-    .content{
-      grid-template-columns: 1fr;
-    }
-  }
+      .hello-card {
+        width: min(100%, 420px);
+        min-height: 476px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 54px 48px 42px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: transparent;
+        -webkit-backdrop-filter: blur(20px) saturate(135%);
+        backdrop-filter: blur(20px) saturate(135%);
+        text-align: center;
+        box-shadow:
+          0 0 0 1px rgba(189, 211, 255, 0.2),
+          0 0 34px rgba(91, 137, 255, 0.48),
+          0 -34px 105px rgba(93, 103, 255, 0.62),
+          -32px -24px 66px rgba(121, 91, 255, 0.32),
+          32px 28px 66px rgba(126, 207, 255, 0.28),
+          0 34px 80px rgba(0, 0, 0, 0.48);
+      }
 
-  /* faint dot grid, softened for the gradient background */
-  .card::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:26px;
-    background-image: radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px);
-    background-size: 16px 16px;
-    -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 75%);
-            mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 75%);
-    pointer-events:none;
-  }
+      .hello-card::before {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 110px;
+        top: -34px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #bcc6ff;
+        border-radius: 50%;
+        opacity: 0.68;
+        filter: blur(35px);
+      }
 
-  /* progress dashes */
-  .progress{
-    position:relative;
-    display:flex;
-    gap:6px;
-    justify-content:center;
-    margin-bottom: 34px;
-  }
-  .progress span{
-    width: 26px;
-    height: 4px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.85);
-    box-shadow: 0 0 8px rgba(255,255,255,0.5);
-  }
+      .hello-card::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(219, 223, 255, 0.2);
+        border-radius: 20px;
+        box-shadow:
+          -18px -12px 38px rgba(137, 104, 255, 0.48),
+          18px 18px 38px rgba(255, 211, 157, 0.42);
+        pointer-events: none;
+      }
 
-  /* folder / document icon */
-  .icon-hero{
-    position:relative;
-    width: 88px;
-    height: 88px;
-    margin: 0 auto 22px;
-  }
-  .icon-hero .paper{
-    position:absolute;
-    left: 16px;
-    top: 6px;
-    width: 52px;
-    height: 62px;
-    background: linear-gradient(180deg,#fbfbfb,#e9e9e9);
-    border-radius: 6px;
-    transform: rotate(-4deg);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.35);
-  }
-  .icon-hero .paper::before{
-    content:"";
-    position:absolute;
-    left:10px; right:10px; top:14px;
-    height:6px;
-    border-radius:3px;
-    background: rgba(0,0,0,0.12);
-  }
-  .icon-hero .paper::after{
-    content:"";
-    position:absolute;
-    left:10px; right:22px; top:26px;
-    height:4px;
-    border-radius:2px;
-    background: rgba(0,0,0,0.08);
-    box-shadow: 0 10px 0 rgba(0,0,0,0.08), 0 20px 0 rgba(0,0,0,0.08);
-  }
-  .icon-hero .folder{
-    position:absolute;
-    left: 8px;
-    bottom: 8px;
-    width: 72px;
-    height: 40px;
-    background: linear-gradient(180deg,#4a3f78,#2c2456);
-    border-radius: 10px;
-    box-shadow:
-      0 10px 20px rgba(30,10,60,0.35),
-      inset 0 1px 0 rgba(255,255,255,0.15);
-  }
-  .icon-hero .folder::before{
-    content:"";
-    position:absolute;
-    left:14px; right:14px; top:-6px;
-    height:12px;
-    background: #362c60;
-    border-radius: 6px 6px 0 0;
-  }
+      .icon-wrap {
+        width: 96px;
+        height: 96px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 22px;
+        border: 1px solid rgba(223, 226, 255, 0.48);
+        border-radius: 26px;
+        background: var(--surface-soft);
+        color: var(--accent-bright);
+        font-size: 3rem;
+        position: relative;
+        top: -10px;
+        box-shadow:
+          0 0 18px rgba(129, 140, 255, 0.5),
+          inset 0 0 24px rgba(113, 123, 255, 0.2);
+        transform: rotate(-5deg);
+        overflow: hidden;
+        animation: icon-bounce 4.5s ease-in-out infinite;
+      }
 
-  /* corner accent badge, like the sparkle circle in the reference */
-  .corner-badge{
-    position:absolute;
-    top: -18px;
-    left: 28px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #9fd8ff, #4d63ff 60%, #2f3fc9 100%);
-    border: 3px solid rgba(255,255,255,0.85);
-    box-shadow: 0 10px 24px rgba(40,60,200,0.4);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index: 5;
-  }
-  .corner-badge svg{
-    width: 22px;
-    height: 22px;
-    fill: #ffffff;
-  }
+      @keyframes icon-bounce {
+        0%,
+        100% {
+          transform: rotate(-5deg) translateY(0);
+        }
+        50% {
+          transform: rotate(-5deg) translateY(-9px);
+        }
+      }
 
-  /* placeholder text bars, restyled for the gradient background */
-  .bar{
-    border-radius: 6px;
-    background: rgba(255,255,255,0.35);
-  }
-  .hero-title{
-    margin: 0 auto 14px;
-    text-align: center;
-    font-family: "Trench Slab", "General Sans", serif;
-    font-size: clamp(28px, 7vw, 40px);
-    line-height: 1.15;
-    font-weight: 500;
-    letter-spacing: -0.5px;
-    color: #ffffff;
-    text-shadow: 0 4px 20px rgba(40,20,80,0.25);
-  }
-  .subtitle-bar{
-    width: 78%;
-    height: 12px;
-    margin: 0 auto 6px;
-  }
-  .subtitle-bar.short{
-    width: 50%;
-    margin-bottom: 26px;
-  }
+      .icon-wrap img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
 
-  /* list rows */
-  .rows{
-    display:flex;
-    flex-direction:column;
-    gap: 14px;
-    margin-bottom: 22px;
-  }
-  .row{
-    display:flex;
-    align-items:center;
-    gap: 14px;
-    padding: 8px 4px;
-    border-radius: 14px;
-    transition: background .2s ease;
-  }
-  .row:hover{
-    background: rgba(255,255,255,0.12);
-  }
-  .row-icon{
-    flex: 0 0 auto;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.22);
-    border: 1px solid rgba(255,255,255,0.5);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size: 20px;
-    backdrop-filter: blur(4px);
-  }
-  .row-text{
-    flex: 1 1 auto;
-    display:flex;
-    flex-direction:column;
-    gap: 4px;
-    min-width: 0;
-  }
-  .row-fact{
-    font-family: "General Sans", sans-serif;
-    font-size: 13px;
-    line-height: 1.4;
-    color: #ffffff;
-    font-weight: 600;
-  }
-  .row-fact-sub{
-    font-family: "General Sans", sans-serif;
-    font-size: 11px;
-    line-height: 1.4;
-    color: rgba(255,255,255,0.7);
-  }
-  .change-row{
-    display:flex;
-    justify-content:center;
-    margin-top: 22px;
-  }
-  .change-btn{
-    font-family: "General Sans", sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: #4d3fa8;
-    background: rgba(255,255,255,0.92);
-    border: 1px solid rgba(255,255,255,0.9);
-    padding: 10px 22px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease;
-    box-shadow: 0 8px 20px rgba(40,20,90,0.25);
-  }
-  .change-btn:hover{
-    transform: translateY(-1px);
-    box-shadow: 0 10px 26px rgba(40,20,90,0.32);
-  }
-  .change-btn:active{
-    transform: translateY(0);
-  }
-  /* falling snow */
-  .snow-layer{
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 50;
-  }
-  .snowflake{
-    position: absolute;
-    top: -10px;
-    background: #ffffff;
-    border-radius: 50%;
-    opacity: 0.85;
-    filter: drop-shadow(0 0 2px rgba(255,255,255,0.6));
-    animation-name: snow-fall, snow-sway;
-    animation-timing-function: linear, ease-in-out;
-    animation-iteration-count: infinite, infinite;
-  }
-  @keyframes snow-fall{
-    from{ transform: translateY(-10px); }
-    to{ transform: translateY(110vh); }
-  }
-  @keyframes snow-sway{
-    0%, 100%{ margin-left: 0px; }
-    50%{ margin-left: 24px; }
-  }
-</style>
-</head>
-<body>
+      .hello-card h1 {
+        margin: 0 0 18px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(2rem, 5vw, 2.65rem);
+        letter-spacing: -0.06em;
+        color: #86efac;
+      }
 
-<div class="snow-layer" id="snowLayer"></div>
+      .hello-card h1::after {
+        content: "_";
+        display: inline-block;
+        margin-left: 6px;
+        color: #bbf7d0;
+        animation: cursor-blink 1s steps(1, end) infinite;
+      }
 
-<div class="card-wrap">
-  <div class="stack s2"></div>
-  <div class="stack s1"></div>
-  <div class="corner-badge">
-    <svg viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2z"/></svg>
-  </div>
-  <div class="card">
-    <div class="content">
+      .card-divider {
+        width: min(100%, 270px);
+        height: 1px;
+        margin: 0 0 18px;
+        background: rgba(219, 223, 255, 0.34);
+        box-shadow: 0 0 12px rgba(156, 167, 255, 0.3);
+      }
 
-    <div class="content-left">
+      @keyframes cursor-blink {
+        0%,
+        48% {
+          opacity: 1;
+        }
+        49%,
+        100% {
+          opacity: 0;
+        }
+      }
 
-    <div class="progress">
-      <span></span><span></span><span></span><span></span><span></span><span></span>
-    </div>
+      .hello-card p {
+        max-width: 280px;
+        margin: 0 0 28px;
+        color: var(--muted);
+        font-size: 0.93rem;
+        line-height: 1.65;
+      }
 
-    <div class="icon-hero">
-      <div class="folder"></div>
-      <div class="paper"></div>
-    </div>
+      .explore-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px;
+        border: 1px solid rgba(199, 205, 255, 0.56);
+        border-radius: 7px;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: 180ms ease;
+      }
 
-    <h1 class="hero-title">Hello, World!</h1>
-    <div class="bar subtitle-bar"></div>
-    <div class="bar subtitle-bar short"></div>
+      .explore-button:hover,
+      .explore-button:focus-visible {
+        background: var(--accent-bright);
+        color: var(--background);
+        box-shadow:
+          0 0 18px rgba(169, 178, 255, 0.72),
+          0 0 42px rgba(117, 128, 255, 0.42);
+        outline: none;
+        transform: translateY(-4px) scale(1.04);
+        animation: button-pulse 1s ease-in-out infinite alternate;
+      }
 
-    </div>
+      @keyframes button-pulse {
+        from {
+          box-shadow: 0 0 18px rgba(169, 178, 255, 0.62), 0 0 34px rgba(117, 128, 255, 0.32);
+        }
+        to {
+          box-shadow: 0 0 28px rgba(220, 224, 255, 0.9), 0 0 58px rgba(117, 128, 255, 0.52);
+        }
+      }
 
-    <div class="content-right">
+      .favorite-button {
+        padding: 8px;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 1.35rem;
+        transition: 180ms ease;
+      }
 
-    <div class="rows" id="factRows">
+      .favorite-button:hover,
+      .favorite-button.is-liked {
+        color: #ffb5df;
+        transform: scale(1.12);
+      }
 
-      <div class="row">
-        <div class="row-icon" data-emoji></div>
-        <div class="row-text">
-          <div class="row-fact" data-fact></div>
-          <div class="row-fact-sub" data-source></div>
-        </div>
-      </div>
+      @media (max-width: 640px) {
+        .page {
+          padding: 32px 22px 28px;
+        }
 
-      <div class="row">
-        <div class="row-icon" data-emoji></div>
-        <div class="row-text">
-          <div class="row-fact" data-fact></div>
-          <div class="row-fact-sub" data-source></div>
-        </div>
-      </div>
+        .stage {
+          padding: 38px 0 52px;
+        }
 
-      <div class="row">
-        <div class="row-icon" data-emoji></div>
-        <div class="row-text">
-          <div class="row-fact" data-fact></div>
-          <div class="row-fact-sub" data-source></div>
-        </div>
-      </div>
+        .hello-card {
+          min-height: 430px;
+          padding: 44px 28px 34px;
+        }
+      }
 
-    </div>
+      @media (prefers-reduced-motion: reduce) {
+        .icon-wrap,
+        .hello-card h1::after,
+        .explore-button {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar" aria-label="Card header">
+        <span>UI CARD DESIGN</span>
+        <span>HELLO WORLD</span>
+      </header>
 
-    <div class="change-row">
-      <button class="change-btn" onclick="showNewFacts()">Change facts</button>
-    </div>
+      <section class="stage" aria-labelledby="hello-title">
+        <article class="hello-card">
+          <div class="icon-wrap" aria-hidden="true">
+            <img src="./hello-world-icon.png" alt="Pixel-art Hello World mascot" />
+          </div>
+          <h1 id="hello-title">Hello World</h1>
+          <div class="card-divider" aria-hidden="true"></div>
+          <p>
+            A first step into the web: a small creative experiment made with
+            HTML and CSS while learning by building.
+          </p>
+          <a
+            class="explore-button"
+            href="https://aditya1809-08.github.io/Hello-World/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Explore it <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+          </a>
+        </article>
+      </section>
 
-    </div>
+      <footer class="footer">
+        <button class="favorite-button" type="button" aria-label="Favorite this card" aria-pressed="false">
+          <i class="fa-regular fa-heart" aria-hidden="true"></i>
+        </button>
+        <span>Light Leak Effect Card</span>
+        <span>01</span>
+      </footer>
+    </main>
 
-    </div>
-  </div>
-</div>
+    <script>
+      const favoriteButton = document.querySelector(".favorite-button");
+      const heartIcon = favoriteButton.querySelector("i");
 
-<script>
-  const factPool = [
-    { emoji: "🐙", fact: "Octopuses have three hearts and blue blood.", source: "Marine biology" },
-    { emoji: "🍯", fact: "Honey never spoils if stored properly.", source: "Food science" },
-    { emoji: "♟️", fact: "There are more possible chess games than atoms in the universe.", source: "Mathematics" },
-    { emoji: "🦈", fact: "Sharks existed before trees appeared on Earth.", source: "Paleontology" },
-    { emoji: "🌙", fact: "The Moon is slowly drifting away from Earth each year.", source: "Astronomy" },
-    { emoji: "🐝", fact: "Bees can recognize individual human faces.", source: "Animal cognition" },
-    { emoji: "🧠", fact: "The human brain uses about 20% of the body's energy.", source: "Neuroscience" },
-    { emoji: "🦩", fact: "Flamingos are born gray, not pink.", source: "Zoology" },
-    { emoji: "❄️", fact: "No two snowflakes have ever been proven identical.", source: "Physics" },
-    { emoji: "🐢", fact: "Some tortoises can live longer than 150 years.", source: "Biology" },
-    { emoji: "🌊", fact: "Over 80% of the ocean remains unmapped and unexplored.", source: "Oceanography" },
-    { emoji: "🍎", fact: "Apples float in water because they're 25% air.", source: "Fun science" },
-    { emoji: "🌌", fact: "A day on Venus is longer than its year.", source: "Astronomy" },
-    { emoji: "🐜", fact: "Ants can carry objects many times their own body weight.", source: "Entomology" },
-    { emoji: "🎻", fact: "Sound travels about four times faster in water than in air.", source: "Physics" },
-  ];
-
-  function pickThreeRandom(pool){
-    const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 3);
-  }
-
-  function renderFacts(facts){
-    const rows = document.querySelectorAll('#factRows .row');
-    rows.forEach((row, i) => {
-      const f = facts[i];
-      row.querySelector('[data-emoji]').textContent = f.emoji;
-      row.querySelector('[data-fact]').textContent = f.fact;
-      row.querySelector('[data-source]').textContent = f.source;
-    });
-  }
-
-  function showNewFacts(){
-    renderFacts(pickThreeRandom(factPool));
-  }
-
-  renderFacts(pickThreeRandom(factPool));
-
-  // falling snow
-  (function createSnow(){
-    const layer = document.getElementById('snowLayer');
-    const count = 60;
-    for(let i = 0; i < count; i++){
-      const flake = document.createElement('div');
-      flake.className = 'snowflake';
-      const size = Math.random() * 4 + 2; // 2px - 6px
-      const left = Math.random() * 100; // vw
-      const fallDuration = Math.random() * 10 + 8; // 8s - 18s
-      const swayDuration = Math.random() * 4 + 3; // 3s - 7s
-      const delay = Math.random() * -20; // negative so they start mid-fall
-      const opacity = Math.random() * 0.5 + 0.4;
-
-      flake.style.width = size + 'px';
-      flake.style.height = size + 'px';
-      flake.style.left = left + 'vw';
-      flake.style.opacity = opacity;
-      flake.style.animationDuration = fallDuration + 's, ' + swayDuration + 's';
-      flake.style.animationDelay = delay + 's, ' + delay + 's';
-
-      layer.appendChild(flake);
-    }
-  })();
-</script>
-
-</body>
+      favoriteButton.addEventListener("click", () => {
+        const isLiked = favoriteButton.classList.toggle("is-liked");
+        favoriteButton.setAttribute("aria-pressed", String(isLiked));
+        heartIcon.className = isLiked
+          ? "fa-solid fa-heart"
+          : "fa-regular fa-heart";
+      });
+    </script>
+  </body>
 </html>
